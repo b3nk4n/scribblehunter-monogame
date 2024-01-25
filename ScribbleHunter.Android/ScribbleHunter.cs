@@ -23,8 +23,20 @@ namespace ScribbleHunter
     /// </summary>
     public class ScribbleHunter : Game
     {
+        /*
+         * The game's fixed width and heigth of the screen.
+         * Do NOT change this number, because other related code uses hard
+         * coded values similar to this one and assumes that this is the screen
+         * dimension. This value values was fixed in Windows Phone,
+         * but there are very different screen out there in Android.
+         */
+        const int WIDTH = 480;
+        const int HEIGHT = 800;
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        Matrix screenScaleMatrix;
+        Vector2 screenScaleVector;
 
 #if IS_FREE_VERSION
         /// <summary>
@@ -173,29 +185,24 @@ namespace ScribbleHunter
         protected override void Initialize()
         {
             graphics.IsFullScreen = true;
-            graphics.PreferredBackBufferHeight = 800;
-            graphics.PreferredBackBufferWidth = 480;
+            graphics.PreferredBackBufferHeight = HEIGHT;
+            graphics.PreferredBackBufferWidth = WIDTH;
             graphics.SupportedOrientations = DisplayOrientation.Portrait;
 
             // Aplly the gfx changes
             graphics.ApplyChanges();
 
+            // calculate scaling matrix/vector to fit everything to the assumed screen bounds
+            var bw = GraphicsDevice.PresentationParameters.BackBufferWidth;
+            var bh = GraphicsDevice.PresentationParameters.BackBufferHeight;
+            screenScaleVector = new Vector2((float)bw / WIDTH, (float)bh / HEIGHT);
+            screenScaleMatrix = Matrix.Identity * Matrix.CreateScale(screenScaleVector.X, screenScaleVector.Y, 0f);
+
             TouchPanel.EnabledGestures = GestureType.Tap;
 
             loadVersion();
 
-            this.Window.ClientSizeChanged += Window_ClientSizeChanged;
-
             base.Initialize();
-        }
-
-        void Window_ClientSizeChanged(object sender, EventArgs e)
-        {
-            this.GraphicsDevice.Viewport = new Viewport(0, 0, 800, 480);
-            graphics.PreferredBackBufferHeight = 480;
-            graphics.PreferredBackBufferWidth = 800;
-            // Aplly the gfx changes
-            graphics.ApplyChanges();
         }
 
         /// <summary>
@@ -225,8 +232,8 @@ namespace ScribbleHunter
             paperSheet = Content.Load<Texture2D>(@"Textures\PaperSheet");
             handSheet = Content.Load<Texture2D>(@"Textures\HandSheet");
 
-            starFieldManager1 = new StarFieldManager(this.GraphicsDevice.Viewport.Width,
-                                                    this.GraphicsDevice.Viewport.Height,
+            starFieldManager1 = new StarFieldManager(WIDTH,
+                                                    HEIGHT,
                                                     100,
                                                     50,
                                                     new Vector2(0, 25.0f),
@@ -243,21 +250,21 @@ namespace ScribbleHunter
                                               new Rectangle(0, 100, 45, 45),
                                               6,
                                               new Rectangle(0, 0,
-                                                            this.GraphicsDevice.Viewport.Width,
-                                                            this.GraphicsDevice.Viewport.Height),
+                                                            WIDTH,
+                                                            HEIGHT),
                                               gameInput);
 
             enemyManager = new EnemyManager(spriteSheet,
                                             playerManager,
                                             new Rectangle(0, 0,
-                                                          this.GraphicsDevice.Viewport.Width,
-                                                          this.GraphicsDevice.Viewport.Height));
+                                                          WIDTH,
+                                                          HEIGHT));
 
             bossManager = new BossManager(spriteSheet,
                                           playerManager,
                                           new Rectangle(0, 0,
-                                                        this.GraphicsDevice.Viewport.Width,
-                                                        this.GraphicsDevice.Viewport.Height));
+                                                        WIDTH,
+                                                        HEIGHT));
 
             EffectManager.Initialize(spriteSheet,
                                      new Rectangle(0, 550, 3, 3),
@@ -277,12 +284,12 @@ namespace ScribbleHunter
             pericles22 = Content.Load<SpriteFont>(@"Fonts\Pericles22");
             pericles32 = Content.Load<SpriteFont>(@"Fonts\Pericles32");
 
-            zoomTextManager = new ZoomTextManager(new Vector2(this.GraphicsDevice.Viewport.Width / 2,
-                                                              this.GraphicsDevice.Viewport.Height / 2),
+            zoomTextManager = new ZoomTextManager(new Vector2(WIDTH / 2,
+                                                              HEIGHT / 2),
                                                               pericles20,
                                                               pericles32);
 
-            hud = Hud.GetInstance(GraphicsDevice.Viewport.Bounds,
+            hud = Hud.GetInstance(new Rectangle(0, 0, WIDTH, HEIGHT),
                                   spriteSheet,
                                   pericles22,
                                   0,
@@ -314,24 +321,20 @@ namespace ScribbleHunter
 
             instructionManager = new InstructionManager(spriteSheet,
                                                         pericles22,
-                                                        new Rectangle(0, 0,
-                                                                      GraphicsDevice.Viewport.Width,
-                                                                      GraphicsDevice.Viewport.Height),
+                                                        new Rectangle(0, 0, WIDTH, HEIGHT),
                                                         playerManager,
                                                         enemyManager,
                                                         powerUpManager);
 
-            helpManager = new HelpManager(menuSheet, pericles22, new Rectangle(0, 0,
-                                                                               GraphicsDevice.Viewport.Width,
-                                                                               GraphicsDevice.Viewport.Height));
+            helpManager = new HelpManager(menuSheet, pericles22,
+                new Rectangle(0, 0, WIDTH, HEIGHT));
             HelpManager.GameInput = gameInput;
             SoundManager.PlayBackgroundSound();
 
 
             settingsManager = SettingsManager.GetInstance();
-            settingsManager.Initialize(menuSheet, pericles22, new Rectangle(0, 0,
-                                                                            GraphicsDevice.Viewport.Width,
-                                                                            GraphicsDevice.Viewport.Height));
+            settingsManager.Initialize(menuSheet, pericles22,
+                new Rectangle(0, 0, WIDTH, HEIGHT));
             SettingsManager.GameInput = gameInput;
 
             handManager = new HandManager(handSheet);
@@ -373,8 +376,7 @@ namespace ScribbleHunter
 
         private void setupInputs()
         {
-            gameInput.AddTouchGestureInput(TitleAction, GestureType.Tap, new Rectangle(0, 0,
-                                                                                   480, 800));
+            gameInput.AddTouchGestureInput(TitleAction, GestureType.Tap, new Rectangle(0, 0, WIDTH, HEIGHT));
             gameInput.AddTouchGestureInput(BackToGameAction, GestureType.Tap, continueDestination);
             gameInput.AddTouchGestureInput(BackToMainAction, GestureType.Tap, cancelDestination);
             mainMenuManager.SetupInputs();
@@ -1040,7 +1042,7 @@ namespace ScribbleHunter
         {
             GraphicsDevice.Clear(Color.Black);
 
-            spriteBatch.Begin();
+            spriteBatch.Begin(transformMatrix: screenScaleMatrix);
 
             if (gameState == GameStates.TitleScreen)
             {
@@ -1049,38 +1051,32 @@ namespace ScribbleHunter
                 // title
                 spriteBatch.Draw(menuSheet,
                                  new Vector2(0.0f, 200.0f),
-                                 new Rectangle(0, 0,
-                                               480,
-                                               200),
+                                 new Rectangle(0, 0, WIDTH, 200),
                                  Color.White);
 
                 spriteBatch.DrawString(pericles22,
                                        ContinueText,
-                                       new Vector2(this.GraphicsDevice.Viewport.Width / 2 - pericles22.MeasureString(ContinueText).X / 2,
-                                                   455),
+                                       new Vector2(WIDTH / 2 - pericles22.MeasureString(ContinueText).X / 2, 455),
                                        Color.Black * (0.25f + (float)(Math.Pow(Math.Sin(gameTime.TotalGameTime.TotalSeconds), 2.0f)) * 0.75f));
 
                 spriteBatch.DrawString(pericles20,
                                        MusicByText,
-                                       new Vector2(this.GraphicsDevice.Viewport.Width / 2 - pericles22.MeasureString(MusicByText).X / 2,
-                                                   630),
+                                       new Vector2(WIDTH / 2 - pericles22.MeasureString(MusicByText).X / 2, 630),
                                        Color.Black);
                 spriteBatch.DrawString(pericles20,
                                        MusicCreatorText,
-                                       new Vector2(this.GraphicsDevice.Viewport.Width / 2 - pericles22.MeasureString(MusicCreatorText).X / 2,
-                                                   663),
+                                       new Vector2(WIDTH / 2 - pericles22.MeasureString(MusicCreatorText).X / 2, 663),
                                        Color.Black);
 
                 spriteBatch.DrawString(pericles20,
                                        VersionText,
-                                       new Vector2(this.GraphicsDevice.Viewport.Width - (pericles20.MeasureString(VersionText).X + 15),
-                                                   this.GraphicsDevice.Viewport.Height - (pericles20.MeasureString(VersionText).Y + 10)),
+                                       new Vector2(WIDTH - (pericles20.MeasureString(VersionText).X + 15),
+                                                   HEIGHT - (pericles20.MeasureString(VersionText).Y + 10)),
                                        Color.Black);
 
                 spriteBatch.DrawString(pericles20,
                                        CreatorText,
-                                       new Vector2(15,
-                                                   this.GraphicsDevice.Viewport.Height - (pericles20.MeasureString(CreatorText).Y + 10)),
+                                       new Vector2(15, HEIGHT - (pericles20.MeasureString(CreatorText).Y + 10)),
                                        Color.Black);
             }
 
@@ -1176,14 +1172,14 @@ namespace ScribbleHunter
                 // Pause title
 
                 spriteBatch.Draw(spriteSheet,
-                                 new Rectangle(0, 0, 480, 800),
+                                 new Rectangle(0, 0, WIDTH, HEIGHT),
                                  new Rectangle(0, 550, 1, 1),
                                  Color.White * 0.5f);
 
                 spriteBatch.Draw(menuSheet,
                                  new Vector2(0.0f, 250.0f),
                                  new Rectangle(0, 200,
-                                               480,
+                                               WIDTH,
                                                100),
                                  Color.White * (0.25f + (float)(Math.Pow(Math.Sin(gameTime.TotalGameTime.TotalSeconds), 2.0f)) * 0.75f));
 
@@ -1297,8 +1293,8 @@ namespace ScribbleHunter
             //                                 Color.White);
             //#endif
             spriteBatch.Draw(paperSheet,
-                new Rectangle(0, 0, 800, 480),
-                new Rectangle(0, 0, 800, 480),
+                new Rectangle(0, 0, WIDTH, HEIGHT),
+                new Rectangle(0, 0, WIDTH, HEIGHT),
                 Color.White);
         }
 
