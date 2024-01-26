@@ -7,10 +7,12 @@ namespace ScribbleHunter.Inputs
 {
     class GameInput
     {
-        Dictionary<string, Input> inputs = new Dictionary<string, Input>();
+        private readonly Dictionary<string, Input> inputs = new Dictionary<string, Input>();
+        private readonly Vector2 screenScale;
 
-        public GameInput()
+        public GameInput(Vector2 screenScale)
         {
+            this.screenScale = screenScale;
         }
 
         public Input MyInput(string action)
@@ -18,7 +20,7 @@ namespace ScribbleHunter.Inputs
             // Add the action, if it doesn't already exist
             if (!inputs.ContainsKey(action))
             {
-                inputs.Add(action, new Input());
+                inputs.Add(action, new Input(screenScale));
             }
 
             return inputs[action];

@@ -9,13 +9,13 @@ namespace ScribbleHunter.Android
     [Activity(
         Label = "@string/app_name",
         MainLauncher = true,
-        Icon = "@drawable/icon",
+        Icon = "@mipmap/ic_launcher",
         AlwaysRetainTaskState = true,
         LaunchMode = LaunchMode.SingleInstance,
-        ScreenOrientation = ScreenOrientation.FullUser,
+        ScreenOrientation = ScreenOrientation.Portrait,
         ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.Keyboard | ConfigChanges.KeyboardHidden | ConfigChanges.ScreenSize
     )]
-    public class Activity1 : AndroidGameActivity
+    public class GameActivity : AndroidGameActivity
     {
         private ScribbleHunter _game;
         private View _view;

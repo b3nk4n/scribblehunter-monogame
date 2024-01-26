@@ -4,7 +4,6 @@
  * */
 
 #define IS_FREE_VERSION
-//#define SIMULATE_TRIAL
 
 using System;
 using Microsoft.Xna.Framework;
@@ -15,6 +14,7 @@ using System.Text;
 using System.IO.IsolatedStorage;
 using System.IO;
 using ScribbleHunter.Inputs;
+using Android.Util;
 
 namespace ScribbleHunter
 {
@@ -125,7 +125,7 @@ namespace ScribbleHunter
 
         SettingsManager settingsManager;
 
-        GameInput gameInput = new GameInput();
+        GameInput gameInput;
         private const string TitleAction = "Title";
         private const string BackToGameAction = "BackToGame";
         private const string BackToMainAction = "BackToMain";
@@ -198,7 +198,13 @@ namespace ScribbleHunter
             screenScaleVector = new Vector2((float)bw / WIDTH, (float)bh / HEIGHT);
             screenScaleMatrix = Matrix.Identity * Matrix.CreateScale(screenScaleVector.X, screenScaleVector.Y, 0f);
 
+            gameInput = new GameInput(screenScaleVector);
+            Log.Info("XXX TP", TouchPanel.DisplayHeight.ToString());
+            TouchPanel.DisplayOrientation = DisplayOrientation.Portrait;
+            TouchPanel.DisplayHeight = HEIGHT;
+            TouchPanel.DisplayWidth = WIDTH;
             TouchPanel.EnabledGestures = GestureType.Tap;
+            Log.Info("XXX TP", TouchPanel.DisplayHeight.ToString());
 
             loadVersion();
 
@@ -614,6 +620,9 @@ namespace ScribbleHunter
         protected override void Update(GameTime gameTime)
         {
             float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            TouchPanel.DisplayHeight = HEIGHT;
+            TouchPanel.DisplayWidth = WIDTH;
 
             SoundManager.Update(gameTime);
 

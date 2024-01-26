@@ -7,6 +7,10 @@
     <ApplicationVersion>1</ApplicationVersion>
     <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
+<WarningLevel>4</WarningLevel>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
     <PackageReference Include="MonoGame.Framework.Android" Version="3.8.1.303" />
@@ -15,11 +19,13 @@
     <None Remove="Extensions\" />
     <None Remove="Inputs\" />
     <None Remove="AccelerometerHelper\" />
+    <None Remove="Resources\Drawable\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Extensions\" />
     <Folder Include="Inputs\" />
     <Folder Include="AccelerometerHelper\" />
+    <Folder Include="Resources\Drawable\" />
   </ItemGroup>
   <Target Name="RestoreDotnetTools" BeforeTargets="Restore">
     <Message Text="Restoring dotnet tools" Importance="High" />

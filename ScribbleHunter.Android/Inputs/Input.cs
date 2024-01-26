@@ -4,6 +4,8 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input.Touch;
 using Microsoft.Devices.Sensors;
+using Android.Util;
+using Android.Hardware.Lights;
 
 namespace ScribbleHunter.Inputs
 {
@@ -40,9 +42,12 @@ namespace ScribbleHunter.Inputs
         private static bool isAccelerometerStarted = false;
 
         GestureDefinition currentGestureDefinition;
+        private readonly Vector2 screenScale;
 
-        public Input()
+        public Input(Vector2 screenScale)
         {
+            this.screenScale = screenScale;
+
             if (CurrentGamePadState.Count == 0)
             {
                 CurrentGamePadState.Add(PlayerIndex.One, GamePad.GetState(PlayerIndex.One));
