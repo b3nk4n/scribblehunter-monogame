@@ -11,7 +11,7 @@ namespace ScribbleHunter
     {
         #region Members
 
-        public enum MenuItems { None, Start, Highscores, Instructions, Help, Settings };
+        public enum MenuItems { None, Start, Highscores, Instructions, Settings };
 
         private MenuItems lastPressedMenuItem = MenuItems.None;
 
@@ -42,22 +42,15 @@ namespace ScribbleHunter
         private Rectangle settingsDestination = new Rectangle(120, 605,
                                                           240, 80);
 
-        private bool isReviewDisplayed = true;
         private Rectangle reviewSource = new Rectangle(240, 700,
                                                        100, 100);
         private Rectangle moreGamesSource = new Rectangle(240, 500,
                                                        100, 100);
-        private Rectangle moreGamesOrReviewDestination = new Rectangle(15, 690,
-                                                            100, 100);
-        private Rectangle upgradeGameSource = new Rectangle(340, 700,
-                                                            100, 100);
-        private Rectangle upgradeGameDestination = new Rectangle(190, 690,
-                                                            100, 100);
+        private Rectangle moreGamesDestination = new Rectangle(15, 690,
+                                                               100, 100);
 
-        private Rectangle helpSource = new Rectangle(240, 400,
-                                                     100, 100);
-        private Rectangle helpDestination = new Rectangle(370, 690,
-                                                          100, 100);
+        private Rectangle reviewDestination = new Rectangle(370, 690,
+                                                            100, 100);
 
         private float opacity = 0.0f;
         private const float OpacityMax = 1.0f;
@@ -73,17 +66,10 @@ namespace ScribbleHunter
         private const string InstructionsAction = "Instructions";
         private const string HighscoresAction = "Highscores";
         private const string SettingsAction = "Settings";
-        private const string HelpAction = "Help";
-        private const string MoreGamesOrReviewAction = "MoreGamesOrReview";
-
-        //private MarketplaceSearchTask searchTask;
-        //private MarketplaceReviewTask reviewTask;
-
-        private const string SEARCH_TERM = "Benjamin Sautermeister";
+        private const string ReviewAction = "Review";
+        private const string MoreGamesAction = "MoreGames";
 
         private SpriteFont font;
-
-        private Random rand = new Random();
 
         #endregion
 
@@ -94,8 +80,6 @@ namespace ScribbleHunter
             this.texture = spriteSheet;
             this.gameInput = input;
             this.font = font;
-
-            isReviewDisplayed = rand.Next(2) == 0;
         }
 
         #endregion
@@ -116,13 +100,13 @@ namespace ScribbleHunter
             gameInput.AddTouchGestureInput(SettingsAction,
                                            GestureType.Tap,
                                            settingsDestination);
-            gameInput.AddTouchGestureInput(HelpAction,
+            gameInput.AddTouchGestureInput(ReviewAction,
                                            GestureType.Tap,
-                                           helpDestination);
+                                           reviewDestination);
 
-            gameInput.AddTouchGestureInput(MoreGamesOrReviewAction,
+            gameInput.AddTouchGestureInput(MoreGamesAction,
                                            GestureType.Tap,
-                                           moreGamesOrReviewDestination);
+                                           moreGamesDestination);
         }
 
         public void Update(GameTime gameTime)
@@ -161,8 +145,8 @@ namespace ScribbleHunter
                                 Color.White * opacity);
 
             spriteBatch.Draw(texture,
-                             helpDestination,
-                             helpSource,
+                             reviewDestination,
+                             reviewSource,
                              Color.White * opacity);
 
             spriteBatch.Draw(texture,
@@ -170,20 +154,10 @@ namespace ScribbleHunter
                              settingsSource,
                              Color.White * opacity);
 
-            if (isReviewDisplayed)
-            {
-                spriteBatch.Draw(texture,
-                             moreGamesOrReviewDestination,
-                             reviewSource,
-                             Color.White * opacity);
-            }
-            else
-            {
-                spriteBatch.Draw(texture,
-                             moreGamesOrReviewDestination,
-                             moreGamesSource,
-                             Color.White * opacity);
-            }
+            spriteBatch.Draw(texture,
+                            moreGamesDestination,
+                            moreGamesSource,
+                            Color.White * opacity);
         }
 
         private void handleTouchInputs()
@@ -206,12 +180,6 @@ namespace ScribbleHunter
                 this.lastPressedMenuItem = MenuItems.Instructions;
                 SoundManager.PlayPaperSound();
             }
-            // Help
-            else if (gameInput.IsPressed(HelpAction))
-            {
-                this.lastPressedMenuItem = MenuItems.Help;
-                SoundManager.PlayPaperSound();
-            }
             // Settings
             else if (gameInput.IsPressed(SettingsAction))
             {
@@ -219,23 +187,17 @@ namespace ScribbleHunter
                 SoundManager.PlayPaperSound();
             }
             // More games
-            // TODO remove, or Android/iOS specific functionality?
-            //else if (gameInput.IsPressed(MoreGamesOrReviewAction))
-            //{
-            //    if (isReviewDisplayed)
-            //    {
-            //        reviewTask = new MarketplaceReviewTask();
-            //        reviewTask.Show();
-            //    }
-            //    else
-            //    {
-            //        searchTask = new MarketplaceSearchTask();
-            //        searchTask.SearchTerms = SEARCH_TERM;
-            //        searchTask.Show();
-            //    }
-            //    SoundManager.PlayPaperSound();
+            else if (gameInput.IsPressed(MoreGamesAction))
+            {
+                // TODO open more games in store
+                SoundManager.PlayPaperSound();
 
-            //}
+            }
+            else if (gameInput.IsPressed(ReviewAction))
+            {
+                // TODO open review app in store
+                SoundManager.PlayPaperSound();
+            }
             else
             {
                 this.lastPressedMenuItem = MenuItems.None;
@@ -252,8 +214,6 @@ namespace ScribbleHunter
             this.opacity = Single.Parse(reader.ReadLine());
             this.isActive = Boolean.Parse(reader.ReadLine());
             this.time = Single.Parse(reader.ReadLine());
-
-            this.isReviewDisplayed = Boolean.Parse(reader.ReadLine());
         }
 
         public void Deactivated(StreamWriter writer)
@@ -262,7 +222,6 @@ namespace ScribbleHunter
             writer.WriteLine(opacity);
             writer.WriteLine(isActive);
             writer.WriteLine(time);
-            writer.WriteLine(isReviewDisplayed);
         }
 
         #endregion

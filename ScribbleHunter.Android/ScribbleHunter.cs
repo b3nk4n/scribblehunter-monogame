@@ -41,7 +41,7 @@ namespace ScribbleHunter
 
         enum GameStates
         {
-            TitleScreen, MainMenu, Highscores, Instructions, Help, Settings, Playing, Paused, GameOver,
+            TitleScreen, MainMenu, Highscores, Instructions, Settings, Playing, Paused, GameOver,
             Leaderboards, Submittion, PhonePosition
         };
 
@@ -94,8 +94,6 @@ namespace ScribbleHunter
         LevelManager levelManager;
 
         InstructionManager instructionManager;
-
-        HelpManager helpManager;
 
         PowerUpManager powerUpManager;
         Texture2D powerUpSheet;
@@ -287,11 +285,7 @@ namespace ScribbleHunter
                                                         enemyManager,
                                                         powerUpManager);
 
-            helpManager = new HelpManager(menuSheet, pericles22,
-                new Rectangle(0, 0, WIDTH, HEIGHT));
-            HelpManager.GameInput = gameInput;
             SoundManager.PlayBackgroundSound();
-
 
             settingsManager = SettingsManager.GetInstance();
             settingsManager.Initialize(menuSheet, pericles22,
@@ -321,7 +315,6 @@ namespace ScribbleHunter
             submissionManager.SetupInputs();
             highscoreManager.SetupInputs();
             settingsManager.SetupInputs();
-            helpManager.SetupInputs();
             phonePositionManager.SetupInputs();
         }
 
@@ -516,10 +509,6 @@ namespace ScribbleHunter
                             gameState = GameStates.Instructions;
                             break;
 
-                        case MainMenuManager.MenuItems.Help:
-                            gameState = GameStates.Help;
-                            break;
-
                         case MainMenuManager.MenuItems.Settings:
                             gameState = GameStates.Settings;
                             break;
@@ -674,25 +663,6 @@ namespace ScribbleHunter
                             gameState = GameStates.MainMenu;
                             SoundManager.PlayPaperSound();
                         }
-                    }
-
-                    break;
-
-                case GameStates.Help:
-
-                    updateBackground(elapsed);
-
-                    EffectManager.Update(elapsed);
-                    damageExplosionManager.Update(gameTime);
-
-                    helpManager.IsActive = true;
-                    helpManager.Update(gameTime);
-
-                    if (backButtonPressed)
-                    {
-                        helpManager.IsActive = false;
-                        gameState = GameStates.MainMenu;
-                        SoundManager.PlayPaperSound();
                     }
 
                     break;
@@ -949,15 +919,6 @@ namespace ScribbleHunter
                 handManager.Draw(spriteBatch);
 
                 hud.Draw(spriteBatch);
-            }
-
-            if (gameState == GameStates.Help)
-            {
-                drawBackground(spriteBatch);
-
-                helpManager.Draw(spriteBatch);
-
-                handManager.Draw(spriteBatch);
             }
 
             if (gameState == GameStates.Settings)
