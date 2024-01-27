@@ -10,6 +10,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
 <WarningLevel>4</WarningLevel>
+<AndroidPackageFormat>aab</AndroidPackageFormat>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />

@@ -1,6 +1,4 @@
-﻿#define IS_FREE_VERSION
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -132,11 +130,7 @@ namespace ScribbleHunter
             do
             {
                 int x = rand.Next(50, 430);
-#if IS_FREE_VERSION
-                int y = rand.Next(130, 750);
-#else
                 int y = rand.Next(50, 750);
-#endif
                 pos = new Vector2(x, y);
             } while ((playerManager.playerSprite.Center - pos).Length() < 50);
 

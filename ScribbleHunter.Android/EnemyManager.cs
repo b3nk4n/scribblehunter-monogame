@@ -1,6 +1,4 @@
-﻿#define IS_FREE_VERSION
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -49,11 +47,7 @@ namespace ScribbleHunter
 
         private int currentLevel;
 
-#if IS_FREE_VERSION
-        private const int OFFSET_Y = 80;
-#else
         private const int OFFSET_Y = 0;
-#endif
 
         #endregion
 
@@ -77,11 +71,9 @@ namespace ScribbleHunter
         private void setUpWayPoints()
         {
             Wave wave1 = new Wave();
-#if !IS_FREE_VERSION
             WaveEntity entry01_1 = new WaveEntity(new Vector2(25,75));
             entry01_1.AddRoutePoint(new Vector2(455, 75));
             wave1.AddEntry(entry01_1);
-#endif
             WaveEntity entry01_2 = new WaveEntity(new Vector2(25, 150));
             entry01_2.AddRoutePoint(new Vector2(455, 150));
             wave1.AddEntry(entry01_2);
@@ -97,11 +89,9 @@ namespace ScribbleHunter
             waves.Add(wave1);
 
             Wave wave2 = new Wave();
-#if !IS_FREE_VERSION
             WaveEntity entry02_1 = new WaveEntity(new Vector2(455, 100));
             entry02_1.AddRoutePoint(new Vector2(25, 100));
             wave2.AddEntry(entry02_1);
-#endif
             WaveEntity entry02_2 = new WaveEntity(new Vector2(455, 175));
             entry02_2.AddRoutePoint(new Vector2(25, 175));
             wave2.AddEntry(entry02_2);
@@ -265,11 +255,9 @@ namespace ScribbleHunter
             waves.Add(wave8);
 
             Wave wave9 = new Wave();
-#if !IS_FREE_VERSION
             WaveEntity entry09_1 = new WaveEntity(new Vector2(240, 100));
             entry09_1.AddRoutePoint(new Vector2(25, 100));
             wave9.AddEntry(entry09_1);
-#endif
             WaveEntity entry09_2 = new WaveEntity(new Vector2(240, 200));
             entry09_2.AddRoutePoint(new Vector2(25, 200));
             wave9.AddEntry(entry09_2);
@@ -291,11 +279,9 @@ namespace ScribbleHunter
             waves.Add(wave9);
 
             Wave wave10 = new Wave();
-#if !IS_FREE_VERSION
             WaveEntity entry10_1 = new WaveEntity(new Vector2(240, 100));
             entry10_1.AddRoutePoint(new Vector2(455, 100));
             wave10.AddEntry(entry10_1);
-#endif
             WaveEntity entry10_2 = new WaveEntity(new Vector2(240, 200));
             entry10_2.AddRoutePoint(new Vector2(455, 200));
             wave10.AddEntry(entry10_2);
@@ -416,14 +402,12 @@ namespace ScribbleHunter
             WaveEntity entry13_7 = new WaveEntity(new Vector2(25, 140));
             entry13_7.AddRoutePoint(new Vector2(455, 140));
             wave13.AddEntry(entry13_7);
-#if !IS_FREE_VERSION
             WaveEntity entry13_8 = new WaveEntity(new Vector2(25, 100));
             entry13_8.AddRoutePoint(new Vector2(455, 100));
             wave13.AddEntry(entry13_8);
             WaveEntity entry13_9 = new WaveEntity(new Vector2(25, 60));
             entry13_9.AddRoutePoint(new Vector2(455, 60));
             wave13.AddEntry(entry13_9);
-#endif
             WaveEntity entry13_10 = new WaveEntity(new Vector2(25, 420));
             entry13_10.AddRoutePoint(new Vector2(455, 420));
             wave13.AddEntry(entry13_10);
@@ -475,14 +459,12 @@ namespace ScribbleHunter
             WaveEntity entry14_7 = new WaveEntity(new Vector2(455, 140));
             entry14_7.AddRoutePoint(new Vector2(25, 140));
             wave14.AddEntry(entry14_7);
-#if !IS_FREE_VERSION
             WaveEntity entry14_8 = new WaveEntity(new Vector2(455, 100));
             entry14_8.AddRoutePoint(new Vector2(25, 100));
             wave14.AddEntry(entry14_8);
             WaveEntity entry14_9 = new WaveEntity(new Vector2(455, 60));
             entry14_9.AddRoutePoint(new Vector2(25, 60));
             wave14.AddEntry(entry14_9);
-#endif
             WaveEntity entry14_10 = new WaveEntity(new Vector2(455, 420));
             entry14_10.AddRoutePoint(new Vector2(25, 420));
             wave14.AddEntry(entry14_10);
@@ -512,7 +494,7 @@ namespace ScribbleHunter
             wave14.AddEntry(entry14_18);
             waves.Add(wave14);
 
-            /* since Version 1.3 */
+            /* since Windows Phone Version 1.3 */
 
             Wave wave15 = new Wave();
             WaveEntity entry15_1 = new WaveEntity(new Vector2(240, 250));
@@ -821,11 +803,7 @@ namespace ScribbleHunter
             do
             {
                 int x = rand.Next(25, 455);
-#if IS_FREE_VERSION
-                int y = rand.Next(105, 775);
-#else
                 int y = rand.Next(25, 775);
-#endif
                 pos = new Vector2(x, y);
             } while ((playerManager.playerSprite.Center - pos).Length() < 100);
 

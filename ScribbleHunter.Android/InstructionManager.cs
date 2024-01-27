@@ -1,6 +1,4 @@
-﻿#define IS_FREE_VERSION
-
-using System;
+﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.IO;
@@ -51,11 +49,7 @@ namespace ScribbleHunter
         private readonly Rectangle ArrowRightSource = new Rectangle(650, 140, 40, 20);
 
         private readonly Rectangle ReloadDestination = new Rectangle(235, 770, 50, 30);
-#if IS_FREE_VERSION
-        private readonly Rectangle ComboDestination = new Rectangle(45, 140, 50, 40);
-#else
         private readonly Rectangle ComboDestination = new Rectangle(45, 60, 50, 30);
-#endif
         private readonly Rectangle PowerUpArrowDestination = new Rectangle(255, 535, 50, 30);
 
         private readonly Rectangle FingerprintSource = new Rectangle(1100, 700, 200, 200);

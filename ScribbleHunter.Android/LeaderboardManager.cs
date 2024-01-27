@@ -1,6 +1,4 @@
-﻿//define IS_FREE_VERSION
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net;
 using Microsoft.Xna.Framework.Graphics;
@@ -84,8 +82,6 @@ namespace ScribbleHunter
 
         private const string LEADERBOARDS_FILE = "leaderboardsxml.txt";
 
-        private const string FREE_SIGN = "FREE";
-        private const string TRIAL_SIGN = "TRIAL";
         private const string FULL_SIGN = "FULL";
 
         #endregion
@@ -166,11 +162,7 @@ namespace ScribbleHunter
 
             string version;
 
-#if IS_FREE_VERSION
-            version = FREE_SIGN;
-#else
             version = FULL_SIGN;
-#endif
             // TODO replace with standard hashing if even still needed?
             string hash = MD5Core.GetHashString(phoneid + name + score + level + version).ToLower();
             if (!wc.IsBusy)

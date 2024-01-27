@@ -1,11 +1,4 @@
-﻿/****************
- * REMARK: - Remember to set the flags in ALL files
- *         - Set up the correct app name: "ScribbleHunter" / "ScribbleHunter Free"
- * */
-
-#define IS_FREE_VERSION
-
-using System;
+﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -14,7 +7,6 @@ using System.Text;
 using System.IO.IsolatedStorage;
 using System.IO;
 using ScribbleHunter.Inputs;
-using Android.Util;
 
 namespace ScribbleHunter
 {
@@ -38,23 +30,8 @@ namespace ScribbleHunter
         Matrix screenScaleMatrix;
         Vector2 screenScaleVector;
 
-#if IS_FREE_VERSION
-        /// <summary>
-        /// Advertising stuff
-        /// </summary>
-        //private AdGameComponent adGameComponent;
-        //private DrawableAd bannerAd;
-        //private AdManager dpManager;
-        //private bool isAdDuplexActive = false;
-        //private bool bannerLoaded;
-        //private readonly Rectangle BannerDummySource = new Rectangle(1100, 600, 480, 80);
-#endif
-
         private const string HighscoreText = "Personal Highscore!";
         private const string GameOverText = "GAME OVER!";
-
-        //private const string KeyboardInLocalMessageFormatText = "You are locally ranked {0}/10!\nPlease enter your name...\n[only: A..Z, a..z, 0..9, 12 characters]";
-        //private const string KeyboardNotInLocalMessageFormatText = "You are not locally ranked!\nPlease enter your name for online submission...\n[only: A..Z, a..z, 0..9, 12 characters]";
 
         private const string ContinueText = "Push to continue...";
         private string VersionText;
@@ -153,22 +130,9 @@ namespace ScribbleHunter
             graphics.PreparingDeviceSettings += new EventHandler<PreparingDeviceSettingsEventArgs>(graphics_PreparingDeviceSettings);
 
             Content.RootDirectory = "Content";
-//#if IS_FREE_VERSION
-//#if DEBUG
-//            AdGameComponent.Initialize(this, "test_client");
-//#else
-//            AdGameComponent.Initialize(this, "793d8686-f1d6-4b69-8fd5-bf6fef7997ff");
-//            System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
-//            System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("en-US");
-//#endif
 
-//            adGameComponent = AdGameComponent.Current;
-//            adGameComponent.Enabled = true;
-//#endif
             // Frame rate is 60 fps
             TargetElapsedTime = TimeSpan.FromTicks(166667);
-
-            InitializaPhoneServices();
         }
 
         void graphics_PreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs e)
@@ -223,17 +187,6 @@ namespace ScribbleHunter
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-//#if IS_FREE_VERSION
-//            // Create a banner ad for the game.
-//#if DEBUG
-//            bannerAd = adGameComponent.CreateAd("Image480_80", new Rectangle(0, 0, 480, 80));
-//#else
-//            bannerAd = adGameComponent.CreateAd("120636", new Rectangle(0, 0, 480, 80));
-//#endif
-//            bannerAd.BorderEnabled = false;
-//            bannerAd.AdRefreshed += new EventHandler(bannerAd_AdRefreshed);
-//            bannerAd.ErrorOccurred += new EventHandler<Microsoft.Advertising.AdErrorEventArgs>(bannerAd_ErrorOccurred);
-//#endif
             spriteSheet = Content.Load<Texture2D>(@"Textures\SpriteSheet");
             menuSheet = Content.Load<Texture2D>(@"Textures\MenuSheet");
             powerUpSheet = Content.Load<Texture2D>(@"Textures\PowerUpSheet");
@@ -302,7 +255,6 @@ namespace ScribbleHunter
                                   spriteSheet,
                                   pericles22,
                                   0,
-                                  bossManager,
                                   playerManager);
 
             highscoreManager = HighscoreManager.GetInstance();
@@ -357,31 +309,7 @@ namespace ScribbleHunter
             PhonePositionManager.GameInput = gameInput;
 
             setupInputs();
-
-//#if IS_FREE_VERSION
-//            // ad duplex
-//            dpManager = new AdManager(this, "62583");
-//            dpManager.LoadContent();
-//#endif
         }
-
-//#if IS_FREE_VERSION
-//        void bannerAd_ErrorOccurred(object sender, Microsoft.Advertising.AdErrorEventArgs e)
-//        {
-//            bannerLoaded = false;
-
-//            // If loading of banner is failed, load an ad duplex banner.
-//            isAdDuplexActive = true;
-//        }
-
-//        void bannerAd_AdRefreshed(object sender, EventArgs e)
-//        {
-//            bannerLoaded = true;
-
-//            // If loading of MS banner succeeded, disable ad duplex banner.
-//            isAdDuplexActive = false;
-//        }
-//#endif
 
         private void setupInputs()
         {
@@ -405,79 +333,6 @@ namespace ScribbleHunter
         {
         }
 
-        private void InitializaPhoneServices()
-        {
-            //PhoneApplicationService.Current.Activated += new EventHandler<ActivatedEventArgs>(GameActivated);
-            //PhoneApplicationService.Current.Deactivated += new EventHandler<DeactivatedEventArgs>(GameDeactivated);
-            //PhoneApplicationService.Current.Closing += new EventHandler<ClosingEventArgs>(GameClosing);
-            //PhoneApplicationService.Current.Launching += new EventHandler<LaunchingEventArgs>(GameLaunching);
-        }
-
-        /// <summary>
-        /// Occurs when the game class (and application) deactivated and tombstoned.
-        /// Saves state of: ScribbleHunter, AsteroidManager
-        /// Does not save: Starfield-Manager (not necessary)
-        /// </summary>
-        //void GameDeactivated(object sender, DeactivatedEventArgs e)
-        //{
-        //    // Save to Isolated Storage file
-        //    using (IsolatedStorageFile isolatedStorageFile
-        //        = IsolatedStorageFile.GetUserStoreForApplication())
-        //    {
-        //        // If user choose to save, create a new file
-        //        using (IsolatedStorageFileStream fileStream
-        //            = isolatedStorageFile.CreateFile("state.dat"))
-        //        {
-        //            using (StreamWriter writer = new StreamWriter(fileStream))
-        //            {
-        //                // Write date to the file
-        //                writer.WriteLine(this.gameState);
-        //                writer.WriteLine(this.stateBeforePaused);
-        //                writer.WriteLine(this.playerDeathTimer);
-        //                writer.WriteLine(this.titleScreenTimer);
-        //                writer.WriteLine(this.highscoreMessageShown);
-        //                writer.WriteLine(this.backButtonTimer);
-
-        //                writer.WriteLine(ScribbleHunter.IsTrialMode);
-
-        //                playerManager.Deactivated(writer);
-
-        //                enemyManager.Deactivated(writer);
-
-        //                bossManager.Deactivated(writer);
-
-        //                EffectManager.Deactivated(writer);
-
-        //                powerUpManager.Deactivated(writer);
-
-        //                zoomTextManager.Deactivated(writer);
-
-        //                levelManager.Deactivated(writer);
-
-        //                instructionManager.Deactivated(writer);
-
-        //                mainMenuManager.Deactivated(writer);
-
-        //                highscoreManager.Deactivated(writer);
-
-        //                submissionManager.Deactivated(writer);
-
-        //                starFieldManager1.Deactivated(writer);
-
-        //                handManager.Deactivated(writer);
-
-        //                damageExplosionManager.Deactivated(writer);
-
-        //                phonePositionManager.Deactivated(writer);
-
-        //                settingsManager.Deactivated(writer);
-
-        //                //writer.Close();
-        //            }
-        //        }
-        //    }
-        //}
-
         /// <summary>
         /// Pauses the game when a call is incoming.
         /// Attention: Also called for GUID !!!
@@ -493,48 +348,6 @@ namespace ScribbleHunter
                 gameState = GameStates.Paused;
             }
         }
-
-        //void GameLaunching(object sender, LaunchingEventArgs e)
-        //{
-        //    tryLoadGame();
-
-        //    if (gameState == GameStates.MainMenu || gameState == GameStates.Help ||
-        //        gameState == GameStates.Highscores || gameState == GameStates.Settings ||
-        //        gameState == GameStates.Submittion || gameState == GameStates.PhonePosition)
-        //    {
-        //        gameState = GameStates.TitleScreen;
-
-        //        // Reset hands:
-        //        handManager.Reset();
-        //    }
-        //}
-
-        /////// <summary>
-        /////// Occurs when the game class (and application) activated during return from tombstoned state
-        /////// </summary>
-        //void GameActivated(object sender, ActivatedEventArgs e)
-        //{
-        //    // no reload of data required, because we are activated from DORMANT state
-        //    if (e.IsApplicationInstancePreserved)
-        //        return;
-
-        //    tryLoadGame();
-        //}
-
-        //void GameClosing(object sender, ClosingEventArgs e)
-        //{
-        //    instructionManager.SaveHasDoneInstructions();
-
-        //    // delete saved active-game on real exit
-        //    using (IsolatedStorageFile isolatedStorageFile
-        //            = IsolatedStorageFile.GetUserStoreForApplication())
-        //    {
-        //        if (isolatedStorageFile.FileExists("state.dat"))
-        //        {
-        //            isolatedStorageFile.DeleteFile("state.dat");
-        //        }
-        //    }
-        //}
 
         private void tryLoadGame()
         {
@@ -1035,14 +848,6 @@ namespace ScribbleHunter
 
             gameInput.EndUpdate();
 
-//#if IS_FREE_VERSION
-//            // Advertisment stuff
-//            if (isAdDuplexActive)
-//                dpManager.Update(gameTime);
-//            else
-//                adGameComponent.Update(gameTime);
-//#endif
-
             base.Update(gameTime);
         }
 
@@ -1229,19 +1034,7 @@ namespace ScribbleHunter
                 hud.Draw(spriteBatch);
             }
 
-//#if IS_FREE_VERSION
-//            adGameComponent.Draw(gameTime);
-
-//            if (!isAdDuplexActive)
-//                adGameComponent.Draw(gameTime);
-//#endif
-
             spriteBatch.End();
-
-//#if IS_FREE_VERSION
-//            if (isAdDuplexActive)
-//                dpManager.Draw(spriteBatch, Vector2.Zero);
-//#endif
 
             base.Draw(gameTime);
         }
@@ -1266,44 +1059,6 @@ namespace ScribbleHunter
 
         private void drawPaper(SpriteBatch spriteBatch)
         {
-            //#if IS_FREE_VERSION
-            //            if (!adGameComponent.Visible || !bannerLoaded)
-            //            {
-            //                spriteBatch.Draw(paperSheet,
-            //                                 new Rectangle(0, 0,
-            //                                               480, 800),
-            //                                 new Rectangle(0, 0,
-            //                                               480, 800),
-            //                                 Color.White);
-
-            //                if (gameState == GameStates.Playing ||
-            //                    gameState == GameStates.Paused ||
-            //                    gameState == GameStates.Instructions ||
-            //                    gameState == GameStates.GameOver)
-            //                {
-            //                    spriteBatch.Draw(spriteSheet,
-            //                                    Vector2.Zero,
-            //                                    BannerDummySource,
-            //                                    Color.Black * 0.8f);
-            //                }
-            //            }
-            //            else
-            //            {
-            //                spriteBatch.Draw(paperSheet,
-            //                                 new Rectangle(0, 80,
-            //                                               480, 720),
-            //                                 new Rectangle(0, 80,
-            //                                               480, 720),
-            //                                 Color.White);
-            //            }
-            //#else
-            //            spriteBatch.Draw(paperSheet,
-            //                                 new Rectangle(0, 0,
-            //                                               480, 800),
-            //                                 new Rectangle(0, 0,
-            //                                               480, 800),
-            //                                 Color.White);
-            //#endif
             spriteBatch.Draw(paperSheet,
                 new Rectangle(0, 0, WIDTH, HEIGHT),
                 new Rectangle(0, 0, WIDTH, HEIGHT),

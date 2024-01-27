@@ -19,11 +19,7 @@ namespace ScribbleHunter
 
         private static Queue<ZoomText> infoTexts = new Queue<ZoomText>(8);
 
-#if IS_FREE_VERSION
-        private static Vector2 InfoLocation = new Vector2(240, 280);
-#else
         private static Vector2 InfoLocation = new Vector2(240, 200);
-#endif
         #endregion
 
         #region Constructors

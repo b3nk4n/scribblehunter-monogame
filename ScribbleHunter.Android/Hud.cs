@@ -1,6 +1,4 @@
-﻿#define IS_FREE_VERSION
-
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Text;
 using ScribbleHunter.Extensions;
@@ -17,7 +15,6 @@ namespace ScribbleHunter
         private long score;
         private int level;
 
-        private BossManager bossManager;
         private PlayerManager playerManager;
 
         private Rectangle screenBounds;
@@ -54,13 +51,8 @@ namespace ScribbleHunter
         private StringBuilder currentLevelText = new StringBuilder(16);
         private const string LEVEL_PRE_TEXT = "Level: ";
 
-#if IS_FREE_VERSION
-        private const int OFFSET_Y = 80;
-        private readonly Vector2 OFFSET_VEC_Y = new Vector2(0, 80);
-#else
         private const int OFFSET_Y = 0;
         private readonly Vector2 OFFSET_VEC_Y = new Vector2(0, 0);
-#endif
 
         private bool canFireDisplayed = false;
         private const float DisplayCanFireTimerLimit = 0.5f;
@@ -71,14 +63,13 @@ namespace ScribbleHunter
         #region Constructors
 
         private Hud(Rectangle screen, Texture2D texture, SpriteFont font,
-                    int level, BossManager bossManager, PlayerManager player)
+                    int level, PlayerManager player)
         {
             this.screenBounds = screen;
             this.texture = texture;
             this.font = font;
             this.score = player.PlayerScore;
             this.level = level;
-            this.bossManager = bossManager;
             this.playerManager = player;
         }
 
@@ -86,8 +77,9 @@ namespace ScribbleHunter
 
         #region Methods
 
-        public static Hud GetInstance(Rectangle screen, Texture2D texture, SpriteFont font,
-                                      int level, BossManager boss, PlayerManager player)
+        public static Hud GetInstance(Rectangle screen, Texture2D texture,
+                                      SpriteFont font, int level,
+                                      PlayerManager player)
         {
             if (hud == null)
             {
@@ -95,7 +87,6 @@ namespace ScribbleHunter
                               texture,
                               font,
                               level,
-                              boss,
                               player);
             }
 

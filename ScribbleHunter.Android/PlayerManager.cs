@@ -1,6 +1,4 @@
-﻿#define IS_FREE_VERSION
-
-using System;
+﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -122,17 +120,11 @@ namespace ScribbleHunter
                                                      2,
                                                      shotSpeed,
                                                      screenBounds);
-#if IS_FREE_VERSION
-            this.playerAreaLimit = new Rectangle(0,
-                                                 80,
-                                                 screenBounds.Width,
-                                                 screenBounds.Height - 95);
-#else
+
             this.playerAreaLimit = new Rectangle(0,
                                                  0,
                                                  screenBounds.Width,
                                                  screenBounds.Height - 15);
-#endif
 
             playerSprite.CollisionRadius = PlayerRadius;
 
