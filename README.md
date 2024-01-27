@@ -17,7 +17,13 @@ This option can be disabled via _Project Properties > Android > Build > Packagin
 Otherwise, the app was just crashing right at startup most of the time when using the default settings.
 
 
-
-## Notes
+## References
 
 App icons have been generated using https://icon.kitchen/.
+
+## Troubleshooting
+
+### Deployment to Android device stops working
+
+In case the deployment using Visual Studio for Mac stops working with `Mono.AndroidTools.AdbException: Attempted to read past the end of the stream.`,
+then either restart the Visual Studio IDE, or kill all related `dotnet` processes.

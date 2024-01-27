@@ -234,13 +234,13 @@ namespace ScribbleHunter
                                           (float)e.AverageAcceleration.Y,
                                           (float)e.AverageAcceleration.Z);
 
-                if (currentAccValue.Z > 0.001f || Math.Abs(currentAccValue.X) > 0.5f)
+                if (currentAccValue.Z < 0.001f || Math.Abs(currentAccValue.X) > 0.5f)
                 {
                     settingsManager.SetNeutralPosition(SettingsManager.NeutralPositionValues.Unsupported);
                     return;
                 }
 
-                float val = -(float)Math.Asin(currentAccValue.Y);
+                float val = (float)Math.Asin(currentAccValue.Y);
 
                 if (val >= settingsManager.GetNeutralPositionRadianValue(-10.0f) && val < settingsManager.GetNeutralPositionRadianValue(5.0f))
                     settingsManager.SetNeutralPosition(SettingsManager.NeutralPositionValues.Angle0);

@@ -4,8 +4,6 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input.Touch;
 using Microsoft.Devices.Sensors;
-using Android.Util;
-using Android.Hardware.Lights;
 
 namespace ScribbleHunter.Inputs
 {

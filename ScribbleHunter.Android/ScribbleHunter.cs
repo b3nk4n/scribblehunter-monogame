@@ -199,12 +199,15 @@ namespace ScribbleHunter
             screenScaleMatrix = Matrix.Identity * Matrix.CreateScale(screenScaleVector.X, screenScaleVector.Y, 0f);
 
             gameInput = new GameInput(screenScaleVector);
-            Log.Info("XXX TP", TouchPanel.DisplayHeight.ToString());
+
+            // Because we are using a different virtual scale compared to the
+            // physical resolution of the screen, using a transformation matrix
+            // of the SpriteBatch, we need to change the display for the touch
+            // panel the same way
             TouchPanel.DisplayOrientation = DisplayOrientation.Portrait;
             TouchPanel.DisplayHeight = HEIGHT;
             TouchPanel.DisplayWidth = WIDTH;
             TouchPanel.EnabledGestures = GestureType.Tap;
-            Log.Info("XXX TP", TouchPanel.DisplayHeight.ToString());
 
             loadVersion();
 

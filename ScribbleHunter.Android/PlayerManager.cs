@@ -3,7 +3,6 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input.Touch;
 using Microsoft.Xna.Framework.Input;
 using System.IO;
 using ScribbleHunter.Inputs;
@@ -287,80 +286,57 @@ namespace ScribbleHunter
             PlayerShotManager.DropMine(location, Color.White, true);
         }
 
-        private void HandleTouchInput(TouchCollection touches)
+        private void HandleInput(KeyboardState state)
         {
             bool fire = false;
 
-            // Resove touches
-            if (gameInput.IsPressed(ActionFire))
+            if (gameInput.IsPressed(ActionFire) || state.IsKeyDown(Keys.D1))
             {
                 fire = true;
             }
 
             if (fire)
             {
-
                 fireWeapon(gameInput.CurrentTouchPosition(ActionFire));
             }
 
-            // Accelerometer controls
-            Vector3 current = currentAccValue;
-            current.Y = current.Y + (float)Math.Sin(settings.GetNeutralPosition());
+            // Keyboard controls
+            Vector2 newVelocity = Vector2.Zero;
 
-            current.Y = MathHelper.Clamp(current.Y, -0.4f, 0.4f);
-            current.X = MathHelper.Clamp(current.X, -0.4f, 0.4f);
-
-            playerSprite.Velocity = new Vector2(current.X * 5,
-                                                -current.Y * 5);
-        }
-
-        private void HandleKeyboardInput(KeyboardState state)
-        {
-#if DEBUG
-
-            bool fire = false;
-
-            // Resolve keys
-            if (state.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.D1))
+            if (state.IsKeyDown(Keys.Left))
             {
-                fire = true;
+                newVelocity += new Vector2(-1.0f, 0.0f);
+            }
+            if (state.IsKeyDown(Keys.Right))
+            {
+                newVelocity += new Vector2(1.0f, 0.0f);
+            }
+            if (state.IsKeyDown(Keys.Up))
+            {
+                newVelocity += new Vector2(0.0f, -1.0f);
+            }
+            if (state.IsKeyDown(Keys.Down))
+            {
+                newVelocity += new Vector2(0.0f, 1.0f);
             }
 
-            // Resolve actions
-
-            if (fire)
-                PlayerShotManager.ShotSpeed = shotSpeed;
-
-            if (fire)
+            if (newVelocity != Vector2.Zero)
             {
-                fireWeapon(gameInput.CurrentTouchPosition(ActionFire));
+                newVelocity.Normalize();
             }
-
-            Vector2 velo = Vector2.Zero;
-
-            if (state.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Left))
+            else
             {
-                velo += new Vector2(-1.0f, 0.0f);
-            }
-            if (state.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Right))
-            {
-                velo += new Vector2(1.0f, 0.0f);
-            }
-            if (state.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Up))
-            {
-                velo += new Vector2(0.0f, -1.0f);
-            }
-            if (state.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Down))
-            {
-                velo += new Vector2(0.0f, 1.0f);
-            }
+                // Accelerometer controls (if no keyboard input was detected)
+                Vector3 current = Vector3.Transform(currentAccValue, Matrix.CreateRotationX(settings.GetNeutralPosition()));
 
-            if (velo != Vector2.Zero)
-                velo.Normalize();
+                current.Y = MathHelper.Clamp(current.Y, -0.4f, 0.4f);
+                current.X = MathHelper.Clamp(current.X, -0.4f, 0.4f);
 
-            playerSprite.Velocity = velo;
-
-#endif
+                newVelocity.X = -current.X * 5;
+                newVelocity.Y = current.Y * 5;
+            }
+               
+            playerSprite.Velocity = newVelocity;
         }
 
         private void adaptMovementLimits()
@@ -451,8 +427,7 @@ namespace ScribbleHunter
                 if (startUpScale > 1)
                     startUpScale = 1;
 
-                HandleTouchInput(TouchPanel.GetState());
-                HandleKeyboardInput(Keyboard.GetState());
+                HandleInput(Keyboard.GetState());
 
                 if (playerSprite.Velocity.Length() != 0.0f)
                 {
