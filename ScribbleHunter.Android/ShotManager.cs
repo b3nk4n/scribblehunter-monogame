@@ -42,7 +42,7 @@ namespace ScribbleHunter
         // Mines
         public List<Sprite> Mines = new List<Sprite>();
         private static Rectangle InitialMineFrame;
-        private static int MineFrameCount = 16; // TODO
+        private static int MineFrameCount = 16;
         private static int MineCollisionRadius = 10;
 
         #endregion

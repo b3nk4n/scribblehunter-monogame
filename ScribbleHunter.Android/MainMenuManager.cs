@@ -4,6 +4,9 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input.Touch;
 using System.IO;
 using ScribbleHunter.Inputs;
+using Android.Content;
+using Android.App;
+using AndroidNet = Android.Net;
 
 namespace ScribbleHunter
 {
@@ -162,46 +165,53 @@ namespace ScribbleHunter
 
         private void handleTouchInputs()
         {
-            // Start
             if (gameInput.IsPressed(StartAction))
             {
                 this.lastPressedMenuItem = MenuItems.Start;
                 SoundManager.PlayPaperSound();
             }
-            // Highscores
             else if (gameInput.IsPressed(HighscoresAction))
             {
                 this.lastPressedMenuItem = MenuItems.Highscores;
                 SoundManager.PlayPaperSound();
             }
-            // Instructions
             else if (gameInput.IsPressed(InstructionsAction))
             {
                 this.lastPressedMenuItem = MenuItems.Instructions;
                 SoundManager.PlayPaperSound();
             }
-            // Settings
             else if (gameInput.IsPressed(SettingsAction))
             {
                 this.lastPressedMenuItem = MenuItems.Settings;
                 SoundManager.PlayPaperSound();
             }
-            // More games
-            else if (gameInput.IsPressed(MoreGamesAction))
+            else if (gameInput.IsPressed(ReviewAction))
             {
-                // TODO open more games in store
+                var packageName = Application.Context.PackageName;
+                var appInStoreUri = "https://play.google.com/store/apps/details?id=" + packageName;
+                launchInBrowser(appInStoreUri);
+
                 SoundManager.PlayPaperSound();
 
             }
-            else if (gameInput.IsPressed(ReviewAction))
+            else if (gameInput.IsPressed(MoreGamesAction))
             {
-                // TODO open review app in store
+                var devStoreUri = "https://play.google.com/store/apps/dev?id=4634207615548190812";
+                launchInBrowser(devStoreUri);
+
                 SoundManager.PlayPaperSound();
             }
             else
             {
                 this.lastPressedMenuItem = MenuItems.None;
             }
+        }
+
+        private void launchInBrowser(string uri)
+        {
+            var intent = new Intent(Intent.ActionView, AndroidNet.Uri.Parse(uri))
+                .AddFlags(ActivityFlags.NewTask);
+            Application.Context.StartActivity(intent);
         }
 
         #endregion
