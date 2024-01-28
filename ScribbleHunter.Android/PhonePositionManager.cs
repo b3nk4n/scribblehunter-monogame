@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Input.Touch;
 using System.IO;
 using ScribbleHunter.Inputs;
 using Microsoft.Phone.Applications.Common;
+using Microsoft.Xna.Framework.Input;
 
 namespace ScribbleHunter
 {
@@ -106,14 +107,20 @@ namespace ScribbleHunter
 
         private void handleTouchInputs()
         {
-            // Cancel
             if (GameInput.IsPressed(CancelAction))
             {
                 cancelClicked = true;
             }
-
-            // Start
             if (canStart && GameInput.IsPressed(GoAction))
+            {
+                startClicked = true;
+            }
+        }
+
+        private void handleKeyboardInputs()
+        {
+            var keyboardState = Keyboard.GetState();
+            if (keyboardState.IsKeyDown(Keys.Space))
             {
                 startClicked = true;
             }
@@ -138,6 +145,7 @@ namespace ScribbleHunter
                     this.opacity += OpacityChangeRate;
 
                 handleTouchInputs();
+                handleKeyboardInputs();
             }
         }
 
