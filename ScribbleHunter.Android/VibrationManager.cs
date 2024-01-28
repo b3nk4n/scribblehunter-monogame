@@ -1,5 +1,5 @@
 ﻿using System;
-using Microsoft.Devices;
+using Xamarin.Essentials;
 
 namespace ScribbleHunter
 {
@@ -9,9 +9,16 @@ namespace ScribbleHunter
 
         public static void Vibrate(float seconds)
         {
-            // TODO find a cross platform solution for vibration functionality
-            //if (settings.GetVabrationValue())
-            //    VibrateController.Default.Start(TimeSpan.FromSeconds(seconds));
+            if (!settings.GetVabrationValue())
+            {
+                return;
+            }
+
+            try
+            {
+                Vibration.Vibrate(TimeSpan.FromSeconds(seconds).TotalMilliseconds);
+            }
+            catch { /* Ignored */ }
         }
     }
 }
