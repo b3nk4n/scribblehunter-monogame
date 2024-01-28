@@ -82,8 +82,6 @@ namespace ScribbleHunter
         HighscoreManager highscoreManager;
         private bool highscoreMessageShown = false;
 
-        LeaderboardManager leaderboardManager;
-
         SubmissionManager submissionManager;
 
         MainMenuManager mainMenuManager;
@@ -258,10 +256,6 @@ namespace ScribbleHunter
             highscoreManager = HighscoreManager.GetInstance();
             HighscoreManager.Font = pericles20;
             HighscoreManager.Texture = menuSheet;
-
-            leaderboardManager = LeaderboardManager.GetInstance();
-            LeaderboardManager.Font = pericles22;
-            LeaderboardManager.Texture = menuSheet;
             HighscoreManager.GameInput = gameInput;
 
             submissionManager = SubmissionManager.GetInstance();
@@ -496,7 +490,6 @@ namespace ScribbleHunter
                             break;
 
                         case MainMenuManager.MenuItems.Highscores:
-                            leaderboardManager.Receive();
                             gameState = GameStates.Highscores;
                             break;
 

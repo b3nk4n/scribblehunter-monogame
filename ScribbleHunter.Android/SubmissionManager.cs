@@ -4,15 +4,12 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input.Touch;
 using System.IO;
 using ScribbleHunter.Inputs;
-using ScribbleHunter.Extensions;
 
 namespace ScribbleHunter
 {
     class SubmissionManager
     {
         #region Members
-
-        LeaderboardManager leaderboardManager;
 
         private readonly Rectangle submitSource = new Rectangle(0, 1440,
                                                                 480, 100);
@@ -86,7 +83,6 @@ namespace ScribbleHunter
 
         private SubmissionManager()
         {
-            leaderboardManager = LeaderboardManager.GetInstance();
         }
 
         #endregion
@@ -127,10 +123,6 @@ namespace ScribbleHunter
                 if (GameInput.IsPressed(SubmitAction))
                 {
                     SoundManager.PlayPaperSound();
-                    leaderboardManager.Submit(LeaderboardManager.SUBMIT,
-                                              name,
-                                              score,
-                                              level);
                     submitState = SubmitState.Submitted;
                 }
 
@@ -149,7 +141,6 @@ namespace ScribbleHunter
             // Cancel
             if (GameInput.IsPressed(CancelAction))
             {
-                leaderboardManager.StatusText = LeaderboardManager.TEXT_NONE;
                 cancelClicked = true;
             }
         }
@@ -190,15 +181,6 @@ namespace ScribbleHunter
                                  submitDestination,
                                  submitSource,
                                  Color.White * opacity);
-            }
-            else if (submitState == SubmitState.Submitted)
-            {
-                spriteBatch.DrawString(FontSmall,
-                                   leaderboardManager.StatusText,
-                                   new Vector2(240 - FontSmall.MeasureString(leaderboardManager.StatusText).X / 2,
-                                               645),
-                                   Color.Black * opacity);
-
             }
 
             for (int i = 0; i < TEXT_SUBMIT.Length; i++)

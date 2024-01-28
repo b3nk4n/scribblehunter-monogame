@@ -4,7 +4,6 @@ using System.IO.IsolatedStorage;
 using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input.Touch;
 using ScribbleHunter.Inputs;
 
 namespace ScribbleHunter
@@ -13,34 +12,9 @@ namespace ScribbleHunter
     {
         #region Members
 
-        LeaderboardManager leaderboardManager;
-
-        public enum ScoreState { Local, OnlineAll, OnlineWeek, OnlineMe, OnlineDay, OnlineMonth, MostAddictive };
+        public enum ScoreState { Local };
 
         private ScoreState scoreState = ScoreState.Local;
-
-        private readonly Rectangle switcherSource = new Rectangle(340, 400,
-                                                                  100, 100);
-        private readonly Rectangle switcherRightDestination = new Rectangle(380, 90,
-                                                                            100, 100);
-
-        private readonly Rectangle switcherLeftDestination = new Rectangle(0, 90,
-                                                                           100, 100);
-
-        private readonly Rectangle browserSource = new Rectangle(340, 500,
-                                                                 100, 100);
-        private readonly Rectangle browserDestination = new Rectangle(15, 700,
-                                                                      100, 100);
-
-        private readonly Rectangle refreshSource = new Rectangle(240, 600,
-                                                                 100, 100);
-        private readonly Rectangle refreshDestination = new Rectangle(380, 700,
-                                                                      100, 100);
-
-        private readonly Rectangle resubmitSource = new Rectangle(340, 600,
-                                                                 100, 100);
-        private readonly Rectangle resubmitDestination = new Rectangle(380, 700,
-                                                                      100, 100);
 
         private static HighscoreManager highscoreManager;
 
@@ -55,18 +29,6 @@ namespace ScribbleHunter
         public static SpriteFont Font;
         private readonly Rectangle LocalTitleSource = new Rectangle(0, 1280,
                                                                         240, 80);
-        private readonly Rectangle OnlineAllTitleSource = new Rectangle(240, 960,
-                                                                        240, 80);
-        private readonly Rectangle OnlineMonthTitleSource = new Rectangle(240, 1040,
-                                                                        240, 80);
-        private readonly Rectangle OnlineWeekTitleSource = new Rectangle(240, 1120,
-                                                                        240, 80);
-        private readonly Rectangle OnlineDayTitleSource = new Rectangle(240, 1200,
-                                                                        240, 80);
-        private readonly Rectangle MostAddictiveTitleSource = new Rectangle(240, 1360,
-                                                                        240, 80);
-        private readonly Rectangle OnlineMeTitleSource = new Rectangle(240, 1280,
-                                                                        240, 80);
         private readonly Vector2 TitlePosition = new Vector2(120.0f, 100.0f);
 
         private string lastName = "Unknown";
@@ -80,24 +42,8 @@ namespace ScribbleHunter
 
         // TODO generally replace online highscores with GPGS
         // private WebBrowserTask browser;
-        private const string BROWSER_URL = "http://bsautermeister.de/scribblehunter/requestscores.php?Method=TOP100WEB";
-
-        private const string TEXT_ME = "Your best personal online achievements:";
-        private const string TEXT_RANK = "Best Rank:";
-        private const string TEXT_SCORE = "Best Score:";
-        private const string TEXT_LEVEL = "Best Level:";
-        private const string TEXT_TOTAL_SCORE = "Addiction Score:";
-        private const string TEXT_TOTAL_LEVEL = "Addiction Level:";
 
         public static GameInput GameInput;
-        private const string RefreshAction = "Refresh";
-        private const string GoLeftAction = "GoLeft";
-        private const string GoRightAction = "GoRight";
-        private const string BrowserAction = "Browser";
-        private const string ResubmitAction = "Resubmit";
-
-        private float switchPageTimer = 0.0f;
-        private const float SwitchPageMinTimer = 0.25f;
 
         private const int RankPositionX = 30;
         private const int NamePositionX = 70;
@@ -120,11 +66,6 @@ namespace ScribbleHunter
 
         private HighscoreManager()
         {
-            leaderboardManager = LeaderboardManager.GetInstance();
-
-            //browser = new WebBrowserTask();
-            //browser.Uri = new Uri(BROWSER_URL);
-
             this.LoadHighScore();
 
             this.loadUserData();
@@ -136,28 +77,10 @@ namespace ScribbleHunter
 
         public void SetupInputs()
         {
-            GameInput.AddTouchGestureInput(RefreshAction,
-                                           GestureType.Tap,
-                                           refreshDestination);
-            GameInput.AddTouchGestureInput(GoLeftAction,
-                                           GestureType.Tap,
-                                           switcherLeftDestination);
-            GameInput.AddTouchGestureInput(GoRightAction,
-                                           GestureType.Tap,
-                                           switcherRightDestination);
-            GameInput.AddTouchGestureInput(BrowserAction,
-                                           GestureType.Tap,
-                                           browserDestination);
-            GameInput.AddTouchGestureInput(ResubmitAction,
-                                           GestureType.Tap,
-                                           resubmitDestination);
-
-            GameInput.AddTouchSlideInput(GoLeftAction,
-                                         Input.Direction.Right,
-                                         40.0f);
-            GameInput.AddTouchSlideInput(GoRightAction,
-                                         Input.Direction.Left,
-                                         40.0f);
+            // TODO cancel button to go back
+            //GameInput.AddTouchGestureInput(RefreshAction,
+            //                               GestureType.Tap,
+            //                               refreshDestination);
         }
 
         public static HighscoreManager GetInstance()
@@ -172,81 +95,16 @@ namespace ScribbleHunter
 
         private void handleTouchInputs()
         {
-            // Switcher right
-            if (GameInput.IsPressed(GoRightAction) && switchPageTimer > SwitchPageMinTimer)
-            {
-                switchPageTimer = 0.0f;
-
-                if (scoreState == ScoreState.Local)
-                    scoreState = ScoreState.OnlineAll;
-                else if (scoreState == ScoreState.OnlineAll)
-                    scoreState = ScoreState.OnlineMonth;
-                else if (scoreState == ScoreState.OnlineMonth)
-                    scoreState = ScoreState.OnlineWeek;
-                else if (scoreState == ScoreState.OnlineWeek)
-                    scoreState = ScoreState.OnlineDay;
-                else if (scoreState == ScoreState.OnlineDay)
-                    scoreState = ScoreState.OnlineMe;
-                else if (scoreState == ScoreState.OnlineMe)
-                    scoreState = ScoreState.MostAddictive;
-                else
-                    scoreState = ScoreState.Local;
-
-                SoundManager.PlayPaperSound();
-            }
-            // Switcher left
-            if (GameInput.IsPressed(GoLeftAction) && switchPageTimer > SwitchPageMinTimer)
-            {
-                switchPageTimer = 0.0f;
-
-                if (scoreState == ScoreState.Local)
-                    scoreState = ScoreState.MostAddictive;
-                else if (scoreState == ScoreState.MostAddictive)
-                    scoreState = ScoreState.OnlineMe;
-                else if (scoreState == ScoreState.OnlineMe)
-                    scoreState = ScoreState.OnlineDay;
-                else if (scoreState == ScoreState.OnlineDay)
-                    scoreState = ScoreState.OnlineWeek;
-                else if (scoreState == ScoreState.OnlineWeek)
-                    scoreState = ScoreState.OnlineMonth;
-                else if (scoreState == ScoreState.OnlineMonth)
-                    scoreState = ScoreState.OnlineAll;
-                else
-                    scoreState = ScoreState.Local;
-
-                SoundManager.PlayPaperSound();
-            }
-            // Resubmit
-            if (GameInput.IsPressed(ResubmitAction))
-            {
-                if (scoreState == ScoreState.Local && topScores.Count > 0 && topScores[0].Score > 0)
-                {
-                    leaderboardManager.Submit(LeaderboardManager.RESUBMIT,
-                                              topScores[0].Name,
-                                              topScores[0].Score,
-                                              topScores[0].Level);
-
-                    SoundManager.PlayPaperSound();
-                }
-            }
-            // Browser - Top100
-            if (GameInput.IsPressed(BrowserAction))
-            {
-                if (scoreState != ScoreState.Local)
-                {
-                    SoundManager.PlayPaperSound();
-                    //browser.Show();
-                }
-            }
+            // TODO cancel button to go back
             // Refresh
-            if (GameInput.IsPressed(RefreshAction))
-            {
-                if (scoreState != ScoreState.Local)
-                {
-                    SoundManager.PlayPaperSound();
-                    leaderboardManager.Receive();
-                }
-            }
+            //if (GameInput.IsPressed(RefreshAction))
+            //{
+            //    if (scoreState != ScoreState.Local)
+            //    {
+            //        SoundManager.PlayPaperSound();
+            //        leaderboardManager.Receive();
+            //    }
+            //}
         }
 
         public void Update(GameTime gameTime)
@@ -255,8 +113,6 @@ namespace ScribbleHunter
 
             if (isActive)
             {
-                switchPageTimer += elapsed;
-
                 if (this.opacity < OpacityMax)
                     this.opacity += OpacityChangeRate;
             }
@@ -266,40 +122,12 @@ namespace ScribbleHunter
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(Texture,
-                             switcherRightDestination,
-                             switcherSource,
-                             Color.White * opacity);
-
-            spriteBatch.Draw(Texture,
-                             switcherLeftDestination,
-                             switcherSource,
-                             Color.White * opacity,
-                             0.0f,
-                             Vector2.Zero,
-                             SpriteEffects.FlipHorizontally,
-                             0.0f);
-
-            spriteBatch.DrawString(Font,
-                                       leaderboardManager.StatusText,
-                                       new Vector2(240 - Font.MeasureString(leaderboardManager.StatusText).X / 2,
-                                                   740),
-                                       Color.Black * opacity);
-
             if (scoreState == ScoreState.Local)
             {
                 spriteBatch.Draw(Texture,
                                  TitlePosition,
                                  LocalTitleSource,
                                  Color.White * opacity);
-
-                if (topScores.Count > 0 && topScores[0].Score > 0)
-                {
-                    spriteBatch.Draw(Texture,
-                                     resubmitDestination,
-                                     resubmitSource,
-                                     Color.White * opacity);
-                }
 
                 for (int i = 0; i < MaxScores; i++)
                 {
@@ -342,429 +170,6 @@ namespace ScribbleHunter
                                            new Vector2(LevelPositionX - Font.MeasureString(levelText).X, RankPositionStartY + (i * RankOffsetY)),
                                            Color.Black * opacity);
                 }
-            }
-
-            if (scoreState == ScoreState.OnlineAll)
-            {
-                spriteBatch.Draw(Texture,
-                                 TitlePosition,
-                                 OnlineAllTitleSource,
-                                 Color.White * opacity);
-
-                spriteBatch.Draw(Texture,
-                                 browserDestination,
-                                 browserSource,
-                                 Color.White * opacity);
-
-                spriteBatch.Draw(Texture,
-                                 refreshDestination,
-                                 refreshSource,
-                                 Color.White * opacity);
-
-                for (int i = 0; i < MaxScores; i++)
-                {
-                    string scoreText;
-                    string nameText;
-                    string levelText;
-
-                    if (leaderboardManager.TopScoresAll.Count > i)
-                    {
-                        Highscore h = new Highscore(leaderboardManager.TopScoresAll[i].Name, leaderboardManager.TopScoresAll[i].Score, leaderboardManager.TopScoresAll[i].Level);
-
-                        scoreText = h.ScoreText;
-                        nameText = h.Name;
-                        levelText = h.LevelText;
-                    }
-                    else
-                    {
-                        scoreText = DOTS12;
-                        nameText = DOTS21;
-                        levelText = DOTS3;
-                    }
-
-                    spriteBatch.DrawString(Font,
-                           string.Format("{0:d}.", i + 1),
-                           new Vector2(RankPositionX, RankPositionStartY + (i * RankOffsetY)),
-                           Color.Black * opacity);
-
-                    spriteBatch.DrawString(Font,
-                                           nameText,
-                                           new Vector2(NamePositionX, RankPositionStartY + (i * RankOffsetY)),
-                                           Color.Black * opacity);
-
-                    spriteBatch.DrawString(Font,
-                                           scoreText,
-                                           new Vector2(ScorePositionX - Font.MeasureString(scoreText).X, RankPositionStartY + (i * RankOffsetY)),
-                                           Color.Black * opacity);
-
-                    spriteBatch.DrawString(Font,
-                                           levelText,
-                                           new Vector2(LevelPositionX - Font.MeasureString(levelText).X, RankPositionStartY + (i * RankOffsetY)),
-                                           Color.Black * opacity);
-                }
-            }
-
-            if (scoreState == ScoreState.OnlineMonth)
-            {
-                spriteBatch.Draw(Texture,
-                                 TitlePosition,
-                                 OnlineMonthTitleSource,
-                                 Color.White * opacity);
-
-                spriteBatch.Draw(Texture,
-                                 browserDestination,
-                                 browserSource,
-                                 Color.White * opacity);
-
-                spriteBatch.Draw(Texture,
-                                 refreshDestination,
-                                 refreshSource,
-                                 Color.White * opacity);
-
-                for (int i = 0; i < MaxScores; i++)
-                {
-                    string scoreText;
-                    string nameText;
-                    string levelText;
-
-                    if (leaderboardManager.TopScoresMonth.Count > i)
-                    {
-                        Highscore h = new Highscore(leaderboardManager.TopScoresMonth[i].Name, leaderboardManager.TopScoresMonth[i].Score, leaderboardManager.TopScoresMonth[i].Level);
-
-                        scoreText = h.ScoreText;
-                        nameText = h.Name;
-                        levelText = h.LevelText;
-                    }
-                    else
-                    {
-                        scoreText = DOTS12;
-                        nameText = DOTS21;
-                        levelText = DOTS3;
-                    }
-
-                    spriteBatch.DrawString(Font,
-                           string.Format("{0:d}.", i + 1),
-                           new Vector2(RankPositionX, RankPositionStartY + (i * RankOffsetY)),
-                           Color.Black * opacity);
-
-                    spriteBatch.DrawString(Font,
-                                           nameText,
-                                           new Vector2(NamePositionX, RankPositionStartY + (i * RankOffsetY)),
-                                           Color.Black * opacity);
-
-                    spriteBatch.DrawString(Font,
-                                           scoreText,
-                                           new Vector2(ScorePositionX - Font.MeasureString(scoreText).X, RankPositionStartY + (i * RankOffsetY)),
-                                           Color.Black * opacity);
-
-                    spriteBatch.DrawString(Font,
-                                           levelText,
-                                           new Vector2(LevelPositionX - Font.MeasureString(levelText).X, RankPositionStartY + (i * RankOffsetY)),
-                                           Color.Black * opacity);
-                }
-            }
-
-            if (scoreState == ScoreState.OnlineWeek)
-            {
-                spriteBatch.Draw(Texture,
-                                 TitlePosition,
-                                 OnlineWeekTitleSource,
-                                 Color.White * opacity);
-
-                spriteBatch.Draw(Texture,
-                                 browserDestination,
-                                 browserSource,
-                                 Color.White * opacity);
-
-                spriteBatch.Draw(Texture,
-                                 refreshDestination,
-                                 refreshSource,
-                                 Color.White * opacity);
-
-                for (int i = 0; i < MaxScores; i++)
-                {
-                    string scoreText;
-                    string nameText;
-                    string levelText;
-
-                    if (leaderboardManager.TopScoresWeek.Count > i)
-                    {
-                        Highscore h = new Highscore(leaderboardManager.TopScoresWeek[i].Name, leaderboardManager.TopScoresWeek[i].Score, leaderboardManager.TopScoresWeek[i].Level);
-
-                        scoreText = h.ScoreText;
-                        nameText = h.Name;
-                        levelText = h.LevelText;
-                    }
-                    else
-                    {
-                        scoreText = DOTS12;
-                        nameText = DOTS21;
-                        levelText = DOTS3;
-                    }
-
-                    spriteBatch.DrawString(Font,
-                           string.Format("{0:d}.", i + 1),
-                           new Vector2(RankPositionX, RankPositionStartY + (i * RankOffsetY)),
-                           Color.Black * opacity);
-
-                    spriteBatch.DrawString(Font,
-                                           nameText,
-                                           new Vector2(NamePositionX, RankPositionStartY + (i * RankOffsetY)),
-                                           Color.Black * opacity);
-
-                    spriteBatch.DrawString(Font,
-                                           scoreText,
-                                           new Vector2(ScorePositionX - Font.MeasureString(scoreText).X, RankPositionStartY + (i * RankOffsetY)),
-                                           Color.Black * opacity);
-
-                    spriteBatch.DrawString(Font,
-                                           levelText,
-                                           new Vector2(LevelPositionX - Font.MeasureString(levelText).X, RankPositionStartY + (i * RankOffsetY)),
-                                           Color.Black * opacity);
-                }
-            }
-
-            if (scoreState == ScoreState.OnlineDay)
-            {
-                spriteBatch.Draw(Texture,
-                                 TitlePosition,
-                                 OnlineDayTitleSource,
-                                 Color.White * opacity);
-
-                spriteBatch.Draw(Texture,
-                                 browserDestination,
-                                 browserSource,
-                                 Color.White * opacity);
-
-                spriteBatch.Draw(Texture,
-                                 refreshDestination,
-                                 refreshSource,
-                                 Color.White * opacity);
-
-                for (int i = 0; i < MaxScores; i++)
-                {
-                    string scoreText;
-                    string nameText;
-                    string levelText;
-
-                    if (leaderboardManager.TopScoresDay.Count > i)
-                    {
-                        Highscore h = new Highscore(leaderboardManager.TopScoresDay[i].Name, leaderboardManager.TopScoresDay[i].Score, leaderboardManager.TopScoresDay[i].Level);
-
-                        scoreText = h.ScoreText;
-                        nameText = h.Name;
-                        levelText = h.LevelText;
-                    }
-                    else
-                    {
-                        scoreText = DOTS12;
-                        nameText = DOTS21;
-                        levelText = DOTS3;
-                    }
-
-                    spriteBatch.DrawString(Font,
-                           string.Format("{0:d}.", i + 1),
-                           new Vector2(RankPositionX, RankPositionStartY + (i * RankOffsetY)),
-                           Color.Black * opacity);
-
-                    spriteBatch.DrawString(Font,
-                                           nameText,
-                                           new Vector2(NamePositionX, RankPositionStartY + (i * RankOffsetY)),
-                                           Color.Black * opacity);
-
-                    spriteBatch.DrawString(Font,
-                                           scoreText,
-                                           new Vector2(ScorePositionX - Font.MeasureString(scoreText).X, RankPositionStartY + (i * RankOffsetY)),
-                                           Color.Black * opacity);
-
-                    spriteBatch.DrawString(Font,
-                                           levelText,
-                                           new Vector2(LevelPositionX - Font.MeasureString(levelText).X, RankPositionStartY + (i * RankOffsetY)),
-                                           Color.Black * opacity);
-                }
-            }
-
-            if (scoreState == ScoreState.MostAddictive)
-            {
-                spriteBatch.Draw(Texture,
-                                 TitlePosition,
-                                 MostAddictiveTitleSource,
-                                 Color.White * opacity);
-
-                spriteBatch.Draw(Texture,
-                                 browserDestination,
-                                 browserSource,
-                                 Color.White * opacity);
-
-                spriteBatch.Draw(Texture,
-                                 refreshDestination,
-                                 refreshSource,
-                                 Color.White * opacity);
-
-                for (int i = 0; i < MaxScores; i++)
-                {
-                    string scoreText;
-                    string nameText;
-                    string levelText;
-
-                    if (leaderboardManager.TopScoresMostAddictive.Count > i)
-                    {
-                        Highscore h = new Highscore(leaderboardManager.TopScoresMostAddictive[i].Name, leaderboardManager.TopScoresMostAddictive[i].Score, leaderboardManager.TopScoresMostAddictive[i].Level);
-
-                        scoreText = h.ScoreText;
-                        nameText = h.Name;
-                        levelText = string.Format("{0:d}", h.Level);
-                    }
-                    else
-                    {
-                        scoreText = DOTS12;
-                        nameText = DOTS21;
-                        levelText = DOTS3;
-                    }
-
-                    spriteBatch.DrawString(Font,
-                           string.Format("{0:d}.", i + 1),
-                           new Vector2(RankPositionX, RankPositionStartY + (i * RankOffsetY)),
-                           Color.Black * opacity);
-
-                    spriteBatch.DrawString(Font,
-                                           nameText,
-                                           new Vector2(NamePositionX, RankPositionStartY + (i * RankOffsetY)),
-                                           Color.Black * opacity);
-
-                    spriteBatch.DrawString(Font,
-                                           scoreText,
-                                           new Vector2(ScorePositionX - Font.MeasureString(scoreText).X, RankPositionStartY + (i * RankOffsetY)),
-                                           Color.Black * opacity);
-
-                    spriteBatch.DrawString(Font,
-                                           levelText,
-                                           new Vector2(LevelPositionX - Font.MeasureString(levelText).X, RankPositionStartY + (i * RankOffsetY)),
-                                           Color.Black * opacity);
-                }
-            }
-
-            if (scoreState == ScoreState.OnlineMe)
-            {
-                spriteBatch.Draw(Texture,
-                                 TitlePosition,
-                                 OnlineMeTitleSource,
-                                 Color.White * opacity);
-
-                spriteBatch.Draw(Texture,
-                                 browserDestination,
-                                 browserSource,
-                                 Color.White * opacity);
-
-                spriteBatch.Draw(Texture,
-                                 refreshDestination,
-                                 refreshSource,
-                                 Color.White * opacity);
-
-                spriteBatch.DrawString(Font,
-                                   TEXT_ME,
-                                   new Vector2(240 - Font.MeasureString(TEXT_ME).X / 2,
-                                               272),
-                                   Color.Black * opacity);
-
-                // Title:
-                spriteBatch.DrawString(Font,
-                                       TEXT_RANK,
-                                       new Vector2(50,
-                                                   350),
-                                       Color.Black * opacity);
-
-                spriteBatch.DrawString(Font,
-                                       TEXT_SCORE,
-                                       new Vector2(50,
-                                                   400),
-                                       Color.Black * opacity);
-
-                spriteBatch.DrawString(Font,
-                                       TEXT_LEVEL,
-                                       new Vector2(50,
-                                                   450),
-                                       Color.Black * opacity);
-
-                spriteBatch.DrawString(Font,
-                                       TEXT_TOTAL_SCORE,
-                                       new Vector2(50,
-                                                   500),
-                                       Color.Black * opacity);
-
-                spriteBatch.DrawString(Font,
-                                       TEXT_TOTAL_LEVEL,
-                                       new Vector2(50,
-                                                   550),
-                                       Color.Black * opacity);
-
-
-                // Content:
-                int topRank = leaderboardManager.TopRankMe;
-                long topScore = leaderboardManager.TopScoreMe;
-                int topLevel = leaderboardManager.TopLevelMe;
-                long totalScore = leaderboardManager.TotalScoreMe;
-                int totalLevel = leaderboardManager.TotalLevelMe;
-                string topRankText;
-                string topScoreText;
-                string topLevelText;
-                string totalScoreText;
-                string totalLevelText;
-
-                if (topRank == 0)
-                    topRankText = DOTS6;
-                else
-                    topRankText = string.Format("{0:d}", leaderboardManager.TopRankMe);
-
-                if (topScore == 0)
-                    topScoreText = DOTS12;
-                else
-                    topScoreText = string.Format("{0:d}", leaderboardManager.TopScoreMe);
-
-                if (topLevel == 0)
-                    topLevelText = DOTS3;
-                else
-                    topLevelText = string.Format("{0:d}", leaderboardManager.TopLevelMe);
-
-                if (totalScore == 0)
-                    totalScoreText = DOTS12;
-                else
-                    totalScoreText = string.Format("{0:d}", leaderboardManager.TotalScoreMe);
-
-                if (totalLevel == 0)
-                    totalLevelText = DOTS3;
-                else
-                    totalLevelText = string.Format("{0:d}", leaderboardManager.TotalLevelMe);
-
-                spriteBatch.DrawString(Font,
-                                       topRankText,
-                                       new Vector2(430 - Font.MeasureString(topRankText).X,
-                                                   350),
-                                       Color.Black * opacity);
-
-                spriteBatch.DrawString(Font,
-                                       topScoreText,
-                                       new Vector2(430 - Font.MeasureString(topScoreText).X,
-                                                   400),
-                                       Color.Black * opacity);
-
-                spriteBatch.DrawString(Font,
-                                       topLevelText,
-                                       new Vector2(430 - Font.MeasureString(topLevelText).X,
-                                                   450),
-                                       Color.Black * opacity);
-
-                spriteBatch.DrawString(Font,
-                                       totalScoreText,
-                                       new Vector2(430 - Font.MeasureString(totalScoreText).X,
-                                                   500),
-                                       Color.Black * opacity);
-
-                spriteBatch.DrawString(Font,
-                                       totalLevelText,
-                                       new Vector2(430 - Font.MeasureString(totalLevelText).X,
-                                                   550),
-                                       Color.Black * opacity);
             }
         }
 
@@ -929,9 +334,6 @@ namespace ScribbleHunter
                     using (StreamWriter sw = new StreamWriter(isfs))
                     {
                         sw.WriteLine(this.LastName);
-
-                        //sw.Flush();
-                        //sw.Close();
                     }
                 }
             }
@@ -957,8 +359,6 @@ namespace ScribbleHunter
                         using (StreamWriter sw = new StreamWriter(isfs))
                         {
                             sw.WriteLine(this.lastName);
-
-                            // ... ? 
                         }
                     }
                 }
