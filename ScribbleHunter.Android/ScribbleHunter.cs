@@ -670,7 +670,7 @@ namespace ScribbleHunter
                     settingsManager.IsActive = true;
                     settingsManager.Update(gameTime);
 
-                    if (backButtonPressed)
+                    if (settingsManager.CancelClicked || backButtonPressed)
                     {
                         settingsManager.IsActive = false;
                         gameState = GameStates.MainMenu;

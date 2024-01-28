@@ -44,6 +44,11 @@ namespace ScribbleHunter
         private readonly Rectangle vibrationDestination = new Rectangle(90, 535,
                                                                         300, 50);
 
+        private readonly Rectangle cancelSource = new Rectangle(0, 800,
+                                                                240, 80);
+        private readonly Rectangle cancelDestination = new Rectangle(125, 710,
+                                                                     230, 77);
+
         private NeutralPositionValues neutralPositionValue = NeutralPositionValues.Angle20;
 
         private static Rectangle screenBounds;
@@ -59,6 +64,7 @@ namespace ScribbleHunter
         private const string MusicAction = "Music";
         private const string SfxAction = "SFX";
         private const string VibrationAction = "Vibration";
+        private const string CancelAction = "Cancel";
 
         private const string ON = "ON";
         private const string OFF = "OFF";
@@ -72,6 +78,7 @@ namespace ScribbleHunter
         private const int ValuePositionX = 390;
 
         private bool isInvalidated = false;
+        private bool cancelClicked = false;
 
         #endregion
 
@@ -97,6 +104,9 @@ namespace ScribbleHunter
             GameInput.AddTouchGestureInput(VibrationAction,
                                            GestureType.Tap,
                                            vibrationDestination);
+            GameInput.AddTouchGestureInput(CancelAction,
+                                           GestureType.Tap,
+                                           cancelDestination);
         }
 
         public void Initialize(Texture2D tex, SpriteFont f, Rectangle screen)
@@ -137,27 +147,33 @@ namespace ScribbleHunter
             drawMusic(spriteBatch);
             drawSfx(spriteBatch);
             drawVibration(spriteBatch);
+
+            spriteBatch.Draw(texture,
+                             cancelDestination,
+                             cancelSource,
+                             Color.White * opacity);
         }
 
         private void handleTouchInputs()
         {
-            // Vibration
             if (GameInput.IsPressed(VibrationAction))
             {
                 toggleVibration();
                 SoundManager.PlayPaperSound();
             }
-            // Music
             else if (GameInput.IsPressed(MusicAction))
             {
                 toggleMusic();
                 SoundManager.PlayPaperSound();
             }
-            // Sfx
             else if (GameInput.IsPressed(SfxAction))
             {
                 toggleSfx();
                 SoundManager.PlayPaperSound();
+            }
+            else if (GameInput.IsPressed(CancelAction))
+            {
+                this.cancelClicked = true;
             }
         }
 
@@ -577,8 +593,17 @@ namespace ScribbleHunter
                 if (isActive == false)
                 {
                     this.opacity = OpacityMin;
+                    this.cancelClicked = false;
                     Save();
                 }
+            }
+        }
+
+        public bool CancelClicked
+        {
+            get
+            {
+                return this.cancelClicked;
             }
         }
 
