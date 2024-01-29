@@ -6,6 +6,7 @@
     <ApplicationId>com.companyname.ScribbleHunter.Android</ApplicationId>
     <ApplicationVersion>1</ApplicationVersion>
     <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+    <AndroidErrorOnCustomJavaObject>false</AndroidErrorOnCustomJavaObject>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>

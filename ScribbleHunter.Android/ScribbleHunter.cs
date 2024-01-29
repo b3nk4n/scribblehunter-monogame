@@ -7,13 +7,15 @@ using System.Text;
 using System.IO.IsolatedStorage;
 using System.IO;
 using ScribbleHunter.Inputs;
+using Android.Window;
+using Java.Interop;
 
-namespace ScribbleHunter
+namespace ScribbleHunter.Android
 {
     /// <summary>
     /// This is the main type for your game
     /// </summary>
-    public class ScribbleHunter : Game
+    public class ScribbleHunter : Game, IBackButtonPressedCallback
     {
         /*
          * The game's fixed width and heigth of the screen.
@@ -119,6 +121,18 @@ namespace ScribbleHunter
         PhonePositionManager phonePositionManager;
 
         private const int SCORE_SUBMIT_LIMIT = 100;
+
+        private bool backButtonPressed = false;
+
+        public nint Handle => throw new NotImplementedException();
+
+        public int JniIdentityHashCode => throw new NotImplementedException();
+
+        public JniObjectReference PeerReference => throw new NotImplementedException();
+
+        public JniPeerMembers JniPeerMembers => throw new NotImplementedException();
+
+        public JniManagedPeerStates JniManagedPeerState => throw new NotImplementedException();
 
         public ScribbleHunter()
         {
@@ -432,8 +446,6 @@ namespace ScribbleHunter
             handManager.Update(gameTime);
 
             gameInput.BeginUpdate();
-
-            bool backButtonPressed = false;
 
             backButtonTimer += elapsed;
 
@@ -1059,6 +1071,11 @@ namespace ScribbleHunter
         private void updateHud(float elapsed)
         {
             hud.Update(elapsed, levelManager.CurrentLevel);
+        }
+
+        public void BackButtonPressed()
+        {
+            backButtonPressed = true;
         }
     }
 }
