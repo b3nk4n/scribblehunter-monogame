@@ -584,7 +584,7 @@ namespace ScribbleHunter.Android
                     highscoreManager.IsActive = true;
                     highscoreManager.Update(gameTime);
 
-                    if (backButtonPressed)
+                    if (highscoreManager.CancelClicked || backButtonPressed)
                     {
                         highscoreManager.IsActive = false;
                         gameState = GameStates.MainMenu;

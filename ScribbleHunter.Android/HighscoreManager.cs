@@ -5,6 +5,8 @@ using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ScribbleHunter.Inputs;
+using Microsoft.Xna.Framework.Input.Touch;
+using Android.Gestures;
 
 namespace ScribbleHunter
 {
@@ -31,7 +33,12 @@ namespace ScribbleHunter
                                                                         240, 80);
         private readonly Vector2 TitlePosition = new Vector2(120.0f, 100.0f);
 
-        private string lastName = "Unknown";
+        private readonly Rectangle cancelSource = new Rectangle(0, 800,
+                                                                240, 80);
+        private readonly Rectangle cancelDestination = new Rectangle(125, 710,
+                                                                     230, 77);
+
+        private string lastName = "Player";
 
         private float opacity = 0.0f;
         private const float OpacityMax = 1.0f;
@@ -40,8 +47,9 @@ namespace ScribbleHunter
 
         private bool isActive = false;
 
-        // TODO generally replace online highscores with GPGS
-        // private WebBrowserTask browser;
+        private const string CancelAction = "Cancel";
+
+        private bool cancelClicked = false;
 
         public static GameInput GameInput;
 
@@ -77,10 +85,9 @@ namespace ScribbleHunter
 
         public void SetupInputs()
         {
-            // TODO cancel button to go back
-            //GameInput.AddTouchGestureInput(RefreshAction,
-            //                               GestureType.Tap,
-            //                               refreshDestination);
+            GameInput.AddTouchGestureInput(CancelAction,
+                                           GestureType.Tap,
+                                           cancelDestination);
         }
 
         public static HighscoreManager GetInstance()
@@ -95,16 +102,10 @@ namespace ScribbleHunter
 
         private void handleTouchInputs()
         {
-            // TODO cancel button to go back
-            // Refresh
-            //if (GameInput.IsPressed(RefreshAction))
-            //{
-            //    if (scoreState != ScoreState.Local)
-            //    {
-            //        SoundManager.PlayPaperSound();
-            //        leaderboardManager.Receive();
-            //    }
-            //}
+            if (GameInput.IsPressed(CancelAction))
+            {
+                this.cancelClicked = true;
+            }
         }
 
         public void Update(GameTime gameTime)
@@ -171,6 +172,11 @@ namespace ScribbleHunter
                                            Color.Black * opacity);
                 }
             }
+
+            spriteBatch.Draw(Texture,
+                             cancelDestination,
+                             cancelSource,
+                             Color.White * opacity);
         }
 
 
@@ -424,7 +430,16 @@ namespace ScribbleHunter
                 if (isActive == false)
                 {
                     this.opacity = OpacityMin;
+                    this.cancelClicked = false;
                 }
+            }
+        }
+
+        public bool CancelClicked
+        {
+            get
+            {
+                return this.cancelClicked;
             }
         }
 
