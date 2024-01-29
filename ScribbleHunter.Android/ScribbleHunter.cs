@@ -7,7 +7,6 @@ using System.Text;
 using System.IO.IsolatedStorage;
 using System.IO;
 using ScribbleHunter.Inputs;
-using Android.Window;
 using Java.Interop;
 
 namespace ScribbleHunter.Android
@@ -274,7 +273,7 @@ namespace ScribbleHunter.Android
 
             submissionManager = SubmissionManager.GetInstance();
             SubmissionManager.FontSmall = pericles20;
-            SubmissionManager.FontBig = pericles22;
+            SubmissionManager.FontBig = pericles32;
             SubmissionManager.Texture = menuSheet;
             SubmissionManager.GameInput = gameInput;
 
@@ -609,8 +608,7 @@ namespace ScribbleHunter.Android
 
                     if (submissionManager.CancelClicked || backButtonPressed)
                     {
-                        highscoreManager.SaveHighScore(submissionManager.Name,
-                                                       playerManager.TotalScore,
+                        highscoreManager.SaveHighScore(playerManager.TotalScore,
                                                        levelManager.CurrentLevel);
 
                         submissionManager.IsActive = false;
@@ -619,8 +617,7 @@ namespace ScribbleHunter.Android
                     }
                     else if (submissionManager.RetryClicked)
                     {
-                        highscoreManager.SaveHighScore(submissionManager.Name,
-                                                       playerManager.TotalScore,
+                        highscoreManager.SaveHighScore(playerManager.TotalScore,
                                                        levelManager.CurrentLevel);
 
                         submissionManager.IsActive = false;
@@ -763,7 +760,7 @@ namespace ScribbleHunter.Android
                         if (playerManager.TotalScore > SCORE_SUBMIT_LIMIT)
                         {
                             gameState = GameStates.Submittion;
-                            submissionManager.SetUp(highscoreManager.LastName, playerManager.TotalScore, levelManager.CurrentLevel);
+                            submissionManager.SetUp(playerManager.TotalScore, levelManager.CurrentLevel);
                         }
                         else
                         {
@@ -798,7 +795,7 @@ namespace ScribbleHunter.Android
                         if (playerManager.TotalScore > SCORE_SUBMIT_LIMIT)
                         {
                             gameState = GameStates.Submittion;
-                            submissionManager.SetUp(highscoreManager.LastName, playerManager.TotalScore, levelManager.CurrentLevel);
+                            submissionManager.SetUp(playerManager.TotalScore, levelManager.CurrentLevel);
                         }
                         else
                         {

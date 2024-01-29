@@ -6,7 +6,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ScribbleHunter.Inputs;
 using Microsoft.Xna.Framework.Input.Touch;
-using Android.Gestures;
 
 namespace ScribbleHunter
 {
@@ -183,13 +182,11 @@ namespace ScribbleHunter
         /// <summary>
         /// Saves the current highscore to a text file.
         /// </summary>
-        public void SaveHighScore(string name, long score, int level)
+        public void SaveHighScore(long score, int level)
         {
-            this.lastName = name;
-
             if (this.IsInScoreboard(score))
             {
-                Highscore newScore = new Highscore(name, score, level);
+                Highscore newScore = new Highscore(lastName, score, level);
 
                 topScores.Add(newScore);
                 this.sortScoreList();
