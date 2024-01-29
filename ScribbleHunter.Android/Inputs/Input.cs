@@ -40,12 +40,9 @@ namespace ScribbleHunter.Inputs
         private static bool isAccelerometerStarted = false;
 
         GestureDefinition currentGestureDefinition;
-        private readonly Vector2 screenScale;
 
-        public Input(Vector2 screenScale)
+        public Input()
         {
-            this.screenScale = screenScale;
-
             if (CurrentGamePadState.Count == 0)
             {
                 CurrentGamePadState.Add(PlayerIndex.One, GamePad.GetState(PlayerIndex.One));

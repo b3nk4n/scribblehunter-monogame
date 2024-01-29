@@ -172,7 +172,7 @@ namespace ScribbleHunter.Android
             screenScaleVector = new Vector2((float)bw / WIDTH, (float)bh / HEIGHT);
             screenScaleMatrix = Matrix.Identity * Matrix.CreateScale(screenScaleVector.X, screenScaleVector.Y, 0f);
 
-            gameInput = new GameInput(screenScaleVector);
+            gameInput = new GameInput();
 
             // Because we are using a different virtual scale compared to the
             // physical resolution of the screen, using a transformation matrix

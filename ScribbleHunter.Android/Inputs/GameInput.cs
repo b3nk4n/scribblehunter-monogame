@@ -8,19 +8,13 @@ namespace ScribbleHunter.Inputs
     class GameInput
     {
         private readonly Dictionary<string, Input> inputs = new Dictionary<string, Input>();
-        private readonly Vector2 screenScale;
-
-        public GameInput(Vector2 screenScale)
-        {
-            this.screenScale = screenScale;
-        }
 
         public Input MyInput(string action)
         {
             // Add the action, if it doesn't already exist
             if (!inputs.ContainsKey(action))
             {
-                inputs.Add(action, new Input(screenScale));
+                inputs.Add(action, new Input());
             }
 
             return inputs[action];
