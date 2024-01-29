@@ -1,6 +1,10 @@
-# ScribbleHunter using MonoGame
+# ScribbleHunter using MonoGame ![GitHub](https://img.shields.io/github/license/b3nk4n/scribblehunter-game)
 
-A cross-platform port of the Windows Phone / Windows 8 scribbled space action game using MonoGame.
+A cross-platform port of the [Windows Phone / Windows 8 scribbled space action game](https://github.com/b3nk4n/scribblehunter-game) using MonoGame.
+
+<p align="center">
+    <img alt="App Logo" src="ScribbleHunter.Android/Resources/play_store_512.png">
+</p>
 
 ## Getting Started
 
@@ -20,6 +24,18 @@ Otherwise, the app was just crashing right at startup most of the time when usin
 ## References
 
 App icons have been generated using https://icon.kitchen/.
+
+## App Publishing
+
+In Visual Studio for Mac, do the following:
+
+1. Import the singing key via _Tools > Preferences_ and _Publishing > Android Signing Keys_
+2. Create an AAB file for publishing by right clicking the project file and selecting _Archive for Publishing_
+
+There is also the possibility to include the signing information in the `.csproj` file. However, only plain text worked for me,
+which is neither secure nor recommended. And the alternative options to use `env:` or `file:` as described in
+[MSDN](https://learn.microsoft.com/en-us/xamarin/android/deploy-test/building-apps/build-properties#androidsigningkeypass)
+did not work somehow.
 
 ## Troubleshooting
 
