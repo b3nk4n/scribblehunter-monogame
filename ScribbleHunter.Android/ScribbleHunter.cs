@@ -42,8 +42,7 @@ namespace ScribbleHunter.Android
 
         enum GameStates
         {
-            TitleScreen, MainMenu, Highscores, Instructions, Settings, Playing, Paused, GameOver,
-            Leaderboards, Submittion, PhonePosition
+            TitleScreen, MainMenu, Instructions, Settings, Playing, Paused, GameOver, Submittion, PhonePosition
         };
 
         GameStates gameState = GameStates.TitleScreen;
@@ -80,7 +79,6 @@ namespace ScribbleHunter.Android
 
         Hud hud;
 
-        HighscoreManager highscoreManager;
         private bool highscoreMessageShown = false;
 
         SubmissionManager submissionManager;
@@ -133,7 +131,13 @@ namespace ScribbleHunter.Android
 
         public JniManagedPeerStates JniManagedPeerState => throw new NotImplementedException();
 
-        public ScribbleHunter()
+        public delegate void ShowLeaderboards();
+        private readonly ShowLeaderboards showLeaderboards;
+
+        public delegate void SubmitLeaderboardScore(long score);
+        private readonly SubmitLeaderboardScore submitLeaderboardScore;
+
+        public ScribbleHunter(ShowLeaderboards showLeaderboards, SubmitLeaderboardScore submitLeaderboardScore)
         {
             graphics = new GraphicsDeviceManager(this);
             graphics.PreparingDeviceSettings += new EventHandler<PreparingDeviceSettingsEventArgs>(graphics_PreparingDeviceSettings);
@@ -142,6 +146,9 @@ namespace ScribbleHunter.Android
 
             // Frame rate is 60 fps
             TargetElapsedTime = TimeSpan.FromTicks(166667);
+
+            this.showLeaderboards = showLeaderboards;
+            this.submitLeaderboardScore = submitLeaderboardScore;
         }
 
         void graphics_PreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs e)
@@ -266,11 +273,6 @@ namespace ScribbleHunter.Android
                                   0,
                                   playerManager);
 
-            highscoreManager = HighscoreManager.GetInstance();
-            HighscoreManager.Font = pericles20;
-            HighscoreManager.Texture = menuSheet;
-            HighscoreManager.GameInput = gameInput;
-
             submissionManager = SubmissionManager.GetInstance();
             SubmissionManager.FontSmall = pericles20;
             SubmissionManager.FontBig = pericles32;
@@ -320,7 +322,6 @@ namespace ScribbleHunter.Android
             mainMenuManager.SetupInputs();
             playerManager.SetupInputs();
             submissionManager.SetupInputs();
-            highscoreManager.SetupInputs();
             settingsManager.SetupInputs();
             phonePositionManager.SetupInputs();
         }
@@ -395,8 +396,6 @@ namespace ScribbleHunter.Android
                                 instructionManager.Activated(reader);
 
                                 mainMenuManager.Activated(reader);
-
-                                highscoreManager.Activated(reader);
 
                                 submissionManager.Activated(reader);
 
@@ -501,7 +500,7 @@ namespace ScribbleHunter.Android
                             break;
 
                         case MainMenuManager.MenuItems.Highscores:
-                            gameState = GameStates.Highscores;
+                            showLeaderboards();
                             break;
 
                         case MainMenuManager.MenuItems.Instructions:
@@ -573,31 +572,18 @@ namespace ScribbleHunter.Android
 
                     break;
 
-                case GameStates.Highscores:
-
-                    updateBackground(elapsed);
-
-                    EffectManager.Update(elapsed);
-                    damageExplosionManager.Update(gameTime);
-
-                    highscoreManager.IsActive = true;
-                    highscoreManager.Update(gameTime);
-
-                    if (highscoreManager.CancelClicked || backButtonPressed)
-                    {
-                        highscoreManager.IsActive = false;
-                        gameState = GameStates.MainMenu;
-                        SoundManager.PlayPaperSound();
-                    }
-
-                    break;
-
                 case GameStates.Submittion:
 
                     updateBackground(elapsed);
 
                     EffectManager.Update(elapsed);
                     damageExplosionManager.Update(gameTime);
+
+                    if (!submissionManager.IsActive)
+                    {
+                        // we just got into the submission state
+                        submitLeaderboardScore(playerManager.TotalScore);
+                    }
 
                     submissionManager.IsActive = true;
                     submissionManager.Update(gameTime);
@@ -608,18 +594,12 @@ namespace ScribbleHunter.Android
 
                     if (submissionManager.CancelClicked || backButtonPressed)
                     {
-                        highscoreManager.SaveHighScore(playerManager.TotalScore,
-                                                       levelManager.CurrentLevel);
-
                         submissionManager.IsActive = false;
                         gameState = GameStates.MainMenu;
                         SoundManager.PlayPaperSound();
                     }
                     else if (submissionManager.RetryClicked)
                     {
-                        highscoreManager.SaveHighScore(playerManager.TotalScore,
-                                                       levelManager.CurrentLevel);
-
                         submissionManager.IsActive = false;
                         resetGame();
                         updateHud(elapsed);
@@ -716,14 +696,6 @@ namespace ScribbleHunter.Android
                     if (levelManager.HasChanged)
                     {
                         levelManager.GoToNextState();
-                    }
-
-                    if (playerManager.TotalScore > highscoreManager.CurrentHighscore &&
-                        highscoreManager.CurrentHighscore != 0 &&
-                       !highscoreMessageShown)
-                    {
-                        zoomTextManager.ShowText(HighscoreText);
-                        highscoreMessageShown = true;
                     }
 
                     if (playerManager.IsDestroyed)
@@ -874,15 +846,6 @@ namespace ScribbleHunter.Android
                 drawBackground(spriteBatch);
 
                 mainMenuManager.Draw(spriteBatch);
-
-                handManager.Draw(spriteBatch);
-            }
-
-            if (gameState == GameStates.Highscores)
-            {
-                drawBackground(spriteBatch);
-
-                highscoreManager.Draw(spriteBatch);
 
                 handManager.Draw(spriteBatch);
             }

@@ -1,9 +1,12 @@
 ﻿using System;
 using Android.App;
+using Android.Content;
 using Android.Content.PM;
 using Android.OS;
+using Android.Util;
 using Android.Views;
 using Android.Window;
+using GooglePlay.Services.Helpers;
 using Microsoft.Xna.Framework;
 
 namespace ScribbleHunter.Android
@@ -23,14 +26,18 @@ namespace ScribbleHunter.Android
     // Because IOnBackInvokedCallback actually has more methods to override
     public class GameActivity : AndroidGameActivity
     {
+        private const string HIGHSCORES_ID = "CgkIm_rm-MobEAIQAQ";
+
         private ScribbleHunter _game;
         private View _view;
+
+        GameHelper helper;
 
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
 
-            _game = new ScribbleHunter();
+            _game = new ScribbleHunter(ShowLeaderboardsHandler, SubmitLeaderboardsScore);
             _view = _game.Services.GetService(typeof(View)) as View;
 
             if (OperatingSystem.IsAndroidVersionAtLeast(33))
@@ -43,7 +50,69 @@ namespace ScribbleHunter.Android
             }
 
             SetContentView(_view);
+            InitializeServices();
+
+            if (helper != null && helper.SignedOut)
+            {
+                helper.SignIn();
+            }
+
             _game.Run();
+        }
+
+        void InitializeServices()
+        {
+            // Setup Google Play Services Helper
+            helper = new GameHelper(this);
+            // Set Gravity and View for Popups
+            helper.GravityForPopups = (GravityFlags.Top | GravityFlags.Center);
+            helper.ViewForPopups = _view;
+            // Hook up events
+            helper.OnSignedIn += (object sender, EventArgs e) => {
+                Log.Info("GameActivity", "Signed in");
+            };
+            helper.OnSignInFailed += (object sender, EventArgs e) => {
+                Log.Info("GameActivity", "Signed in failed!");
+            };
+
+            helper.Initialize();
+        }
+
+        private void ShowLeaderboardsHandler()
+        {
+            if (helper != null && !helper.SignedOut)
+            {
+                helper.ShowAllLeaderBoardsIntent();
+            }
+        }
+
+        private void SubmitLeaderboardsScore(long score)
+        {
+            if (helper != null && !helper.SignedOut)
+            {
+                helper.SubmitScore(HIGHSCORES_ID, score);
+            }
+        }
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+            if (helper != null)
+                helper.Start();
+        }
+
+        protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
+        {
+            if (helper != null)
+                helper.OnActivityResult(requestCode, resultCode, data);
+            base.OnActivityResult(requestCode, resultCode, data);
+        }
+
+        protected override void OnStop()
+        {
+            if (helper != null)
+                helper.Stop();
+            base.OnStop();
         }
     }
 
