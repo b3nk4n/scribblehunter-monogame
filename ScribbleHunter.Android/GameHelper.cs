@@ -1,4 +1,6 @@
-﻿using System;
+﻿#pragma warning disable 612, 618
+
+using System;
 using Android.Gms.Common;
 using Android.Gms.Common.Apis;
 using Android.Gms.Games;
@@ -254,7 +256,7 @@ namespace GooglePlay.Services.Helpers
         /// </summary>
         /// <param name="leaderboardCode">Leaderboard code from you applications Google Play Game Services Leaderboards Page</param>
         /// <param name="value">The value of the score</param>
-        /// <param name="value">Additional MetaData to attach. Must be a URI safe string with a max length of 64 characters</param>
+        /// <param name="metadata">Additional MetaData to attach. Must be a URI safe string with a max length of 64 characters</param>
         public void SubmitScore(string leaderboardCode, long value, string metadata)
         {
             GamesClass.Leaderboards.SubmitScore(client, leaderboardCode, value, metadata);

@@ -31,7 +31,6 @@ namespace ScribbleHunter.Android
         Matrix screenScaleMatrix;
         Vector2 screenScaleVector;
 
-        private const string HighscoreText = "Personal Highscore!";
         private const string GameOverText = "GAME OVER!";
 
         private const string ContinueText = "Push to continue...";
@@ -69,17 +68,12 @@ namespace ScribbleHunter.Android
         ZoomTextManager zoomTextManager;
 
         private float playerDeathTimer = 0.0f;
-        private const float playerDeathDelayTime = 6.0f;
         private const float playerGameOverDelayTime = 5.0f;
 
         private float titleScreenTimer = 0.0f;
         private const float titleScreenDelayTime = 1.0f;
 
-        private Vector2 highscoreLocation = new Vector2(10, 10);
-
         Hud hud;
-
-        private bool highscoreMessageShown = false;
 
         SubmissionManager submissionManager;
 
@@ -297,8 +291,7 @@ namespace ScribbleHunter.Android
             SoundManager.PlayBackgroundSound();
 
             settingsManager = SettingsManager.GetInstance();
-            settingsManager.Initialize(menuSheet, pericles22,
-                new Rectangle(0, 0, WIDTH, HEIGHT));
+            settingsManager.Initialize(menuSheet, pericles22);
             SettingsManager.GameInput = gameInput;
 
             handManager = new HandManager(handSheet);
@@ -376,7 +369,6 @@ namespace ScribbleHunter.Android
 
                                 this.playerDeathTimer = (float)Single.Parse(reader.ReadLine());
                                 this.titleScreenTimer = (float)Single.Parse(reader.ReadLine());
-                                this.highscoreMessageShown = (bool)Boolean.Parse(reader.ReadLine());
                                 this.backButtonTimer = (float)Single.Parse(reader.ReadLine());
 
                                 playerManager.Activated(reader);
@@ -587,8 +579,6 @@ namespace ScribbleHunter.Android
 
                     submissionManager.IsActive = true;
                     submissionManager.Update(gameTime);
-
-                    highscoreMessageShown = false;
 
                     zoomTextManager.Reset();
 

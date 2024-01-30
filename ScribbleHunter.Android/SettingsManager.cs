@@ -27,7 +27,7 @@ namespace ScribbleHunter
         public enum NeutralPositionValues { Angle0, Angle10, Angle20, Angle30, Angle40, Angle50, Angle60, Unsupported };
 
         private const string MUSIC_TITLE = "Music: ";
-        private SoundValues musicValue = SoundValues.Med;
+        private SoundValues musicValue = SoundValues.Low;
         private readonly int musicPositionY = 370;
         private readonly Rectangle musicDestination = new Rectangle(90, 355,
                                                                     300, 50);
@@ -50,8 +50,6 @@ namespace ScribbleHunter
                                                                      230, 77);
 
         private NeutralPositionValues neutralPositionValue = NeutralPositionValues.Angle20;
-
-        private static Rectangle screenBounds;
 
         private float opacity = 0.0f;
         private const float OpacityMax = 1.0f;
@@ -109,11 +107,10 @@ namespace ScribbleHunter
                                            cancelDestination);
         }
 
-        public void Initialize(Texture2D tex, SpriteFont f, Rectangle screen)
+        public void Initialize(Texture2D tex, SpriteFont f)
         {
             texture = tex;
             font = f;
-            screenBounds = screen;
         }
 
         public static SettingsManager GetInstance()
@@ -426,22 +423,22 @@ namespace ScribbleHunter
                     return 0.0f;
 
                 case SoundValues.VeryLow:
-                    return 0.1f;
+                    return 0.05f;
 
                 case SoundValues.Low:
-                    return 0.2f;
+                    return 0.1f;
 
                 case SoundValues.Med:
-                    return 0.3f;
+                    return 0.15f;
 
                 case SoundValues.High:
-                    return 0.4f;
+                    return 0.25f;
 
                 case SoundValues.VeryHigh:
-                    return 0.5f;
+                    return 0.33f;
 
                 default:
-                    return 0.3f;
+                    return 0.15f;
             }
         }
 
