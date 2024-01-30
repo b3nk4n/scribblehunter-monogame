@@ -3,9 +3,10 @@
     <TargetFramework>net7.0-android</TargetFramework>
     <SupportedOSPlatformVersion>23</SupportedOSPlatformVersion>
     <OutputType>Exe</OutputType>
-    <ApplicationId>com.companyname.ScribbleHunter.Android</ApplicationId>
-    <ApplicationVersion>1</ApplicationVersion>
-    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+    <ApplicationId>de.b3nk4n.scribblehunter</ApplicationId>
+    <ApplicationVersion>2</ApplicationVersion>
+    <ApplicationDisplayVersion>1.1</ApplicationDisplayVersion>
+    <ApplicationTitle>ScribbleHunter</ApplicationTitle>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
