@@ -8,6 +8,7 @@ using Android.Views;
 using Android.Window;
 using GooglePlay.Services.Helpers;
 using Microsoft.Xna.Framework;
+using ScribbleHunter.Android.Ads;
 
 namespace ScribbleHunter.Android
 {
@@ -28,17 +29,28 @@ namespace ScribbleHunter.Android
     {
         private const string HIGHSCORES_ID = "CgkIm_rm-MobEAIQAQ";
 
+#if DEBUG
+        private const string AD_UNIT_ID = "ca-app-pub-3940256099942544/1033173712";
+#else
+        private const string AD_UNIT_ID = "ca-app-pub-8102925760359189/2412240412";
+#endif
+
         private ScribbleHunter _game;
         private View _view;
 
-        GameHelper helper;
+        private GameHelper helper;
+        private AdMobService adMobService;
 
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
 
-            _game = new ScribbleHunter(ShowLeaderboardsHandler, SubmitLeaderboardsScore);
+            _game = new ScribbleHunter(
+                ShowLeaderboardsHandler, SubmitLeaderboardsScore,
+                StartNewGameHandler, GameOverEndedHandler);
             _view = _game.Services.GetService(typeof(View)) as View;
+
+            adMobService = new AdMobService(this);
 
             if (OperatingSystem.IsAndroidVersionAtLeast(33))
             {
@@ -50,7 +62,7 @@ namespace ScribbleHunter.Android
             }
 
             SetContentView(_view);
-            InitializeServices();
+            InitializeServices(bundle);
 
             if (helper != null && helper.SignedOut)
             {
@@ -60,8 +72,10 @@ namespace ScribbleHunter.Android
             _game.Run();
         }
 
-        void InitializeServices()
+        void InitializeServices(Bundle bundle)
         {
+            Xamarin.Essentials.Platform.Init(this, bundle);
+
             // Setup Google Play Services Helper
             helper = new GameHelper(this);
             // Set Gravity and View for Popups
@@ -92,6 +106,16 @@ namespace ScribbleHunter.Android
             {
                 helper.SubmitScore(HIGHSCORES_ID, score);
             }
+        }
+
+        private void StartNewGameHandler()
+        {
+            adMobService.LoadInterstitial(AD_UNIT_ID);
+        }
+
+        private void GameOverEndedHandler()
+        {
+            adMobService.ShowInterstitial();
         }
 
         protected override void OnStart()

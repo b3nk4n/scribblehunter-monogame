@@ -2,6 +2,7 @@
 <resources>
   <string name="app_name">ScribbleHunter</string>
   <string name="app_id">947830504731</string>
+  <string name="ad_app_id" translatable="false">ca-app-pub-8102925760359189~2627276103</string>
 </resources>
 
 

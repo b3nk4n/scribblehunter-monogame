@@ -34,6 +34,7 @@ namespace ScribbleHunter.Android
         private const string GameOverText = "GAME OVER!";
 
         private const string ContinueText = "Push to continue...";
+
         private string VersionText;
         private const string MusicByText = "Music by";
         private const string MusicCreatorText = "PLSQMPRFKT";
@@ -126,12 +127,19 @@ namespace ScribbleHunter.Android
         public JniManagedPeerStates JniManagedPeerState => throw new NotImplementedException();
 
         public delegate void ShowLeaderboards();
-        private readonly ShowLeaderboards showLeaderboards;
+        private readonly ShowLeaderboards showLeaderboardsCallback;
 
         public delegate void SubmitLeaderboardScore(long score);
-        private readonly SubmitLeaderboardScore submitLeaderboardScore;
+        private readonly SubmitLeaderboardScore submitLeaderboardScoreCallback;
 
-        public ScribbleHunter(ShowLeaderboards showLeaderboards, SubmitLeaderboardScore submitLeaderboardScore)
+        public delegate void StartNewGame();
+        private readonly StartNewGame startNewGameCallback;
+
+        public delegate void GameOverEnded();
+        private readonly GameOverEnded gameOverEndedCallback;
+
+
+        public ScribbleHunter(ShowLeaderboards showLeaderboards, SubmitLeaderboardScore submitLeaderboardScore, StartNewGame startNewGame, GameOverEnded gameOverEnded)
         {
             graphics = new GraphicsDeviceManager(this);
             graphics.PreparingDeviceSettings += new EventHandler<PreparingDeviceSettingsEventArgs>(graphics_PreparingDeviceSettings);
@@ -141,8 +149,10 @@ namespace ScribbleHunter.Android
             // Frame rate is 60 fps
             TargetElapsedTime = TimeSpan.FromTicks(166667);
 
-            this.showLeaderboards = showLeaderboards;
-            this.submitLeaderboardScore = submitLeaderboardScore;
+            this.showLeaderboardsCallback = showLeaderboards;
+            this.submitLeaderboardScoreCallback = submitLeaderboardScore;
+            this.startNewGameCallback = startNewGame;
+            this.gameOverEndedCallback = gameOverEnded;
         }
 
         void graphics_PreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs e)
@@ -492,7 +502,7 @@ namespace ScribbleHunter.Android
                             break;
 
                         case MainMenuManager.MenuItems.Highscores:
-                            showLeaderboards();
+                            showLeaderboardsCallback();
                             break;
 
                         case MainMenuManager.MenuItems.Instructions:
@@ -574,7 +584,7 @@ namespace ScribbleHunter.Android
                     if (!submissionManager.IsActive)
                     {
                         // we just got into the submission state
-                        submitLeaderboardScore(playerManager.TotalScore);
+                        submitLeaderboardScoreCallback(playerManager.TotalScore);
                     }
 
                     submissionManager.IsActive = true;
@@ -763,6 +773,8 @@ namespace ScribbleHunter.Android
                         {
                             gameState = GameStates.MainMenu;
                         }
+
+                        gameOverEndedCallback();
 
                         EffectManager.Reset();
                     }
@@ -999,6 +1011,8 @@ namespace ScribbleHunter.Android
             levelManager.Reset();
 
             playerManager.ResetPlayerScore();
+
+            startNewGameCallback();
 
             GC.Collect();
         }
