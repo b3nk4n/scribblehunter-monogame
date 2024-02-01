@@ -47,10 +47,9 @@ namespace ScribbleHunter.Android
 
             _game = new ScribbleHunter(
                 ShowLeaderboardsHandler, SubmitLeaderboardsScore,
-                StartNewGameHandler, GameOverEndedHandler);
+                StartNewGameHandler, GameOverEndedHandler,
+                IsPrivacyOptionsRequiredHanlder, ShowPrivacyConsentFormHandler);
             _view = _game.Services.GetService(typeof(View)) as View;
-
-            adMobService = new AdMobService(this);
 
             if (OperatingSystem.IsAndroidVersionAtLeast(33))
             {
@@ -90,6 +89,9 @@ namespace ScribbleHunter.Android
             };
 
             helper.Initialize();
+
+            adMobService = new AdMobService(this);
+            adMobService.Initialize();
         }
 
         private void ShowLeaderboardsHandler()
@@ -116,6 +118,16 @@ namespace ScribbleHunter.Android
         private void GameOverEndedHandler()
         {
             adMobService.ShowInterstitial();
+        }
+
+        private bool IsPrivacyOptionsRequiredHanlder()
+        {
+            return adMobService.IsPrivacyOptionsRequired;
+        }
+
+        private void ShowPrivacyConsentFormHandler()
+        {
+            adMobService.ShowPrivacyConsentForm();
         }
 
         protected override void OnStart()

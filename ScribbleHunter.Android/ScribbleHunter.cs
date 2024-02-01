@@ -138,8 +138,16 @@ namespace ScribbleHunter.Android
         public delegate void GameOverEnded();
         private readonly GameOverEnded gameOverEndedCallback;
 
+        public delegate bool IsPrivacyConsentRequired();
+        private readonly IsPrivacyConsentRequired isPrivacyRequiredSupplier;
 
-        public ScribbleHunter(ShowLeaderboards showLeaderboards, SubmitLeaderboardScore submitLeaderboardScore, StartNewGame startNewGame, GameOverEnded gameOverEnded)
+        public delegate void ShowPrivacyConsent();
+        private readonly ShowPrivacyConsent showPrivacyConsentCallback;
+
+
+        public ScribbleHunter(ShowLeaderboards showLeaderboards, SubmitLeaderboardScore submitLeaderboardScore,
+            StartNewGame startNewGame, GameOverEnded gameOverEnded,
+            IsPrivacyConsentRequired isPrivacyRequired, ShowPrivacyConsent showPrivacyConsent)
         {
             graphics = new GraphicsDeviceManager(this);
             graphics.PreparingDeviceSettings += new EventHandler<PreparingDeviceSettingsEventArgs>(graphics_PreparingDeviceSettings);
@@ -153,6 +161,8 @@ namespace ScribbleHunter.Android
             this.submitLeaderboardScoreCallback = submitLeaderboardScore;
             this.startNewGameCallback = startNewGame;
             this.gameOverEndedCallback = gameOverEnded;
+            this.isPrivacyRequiredSupplier = isPrivacyRequired;
+            this.showPrivacyConsentCallback = showPrivacyConsent;
         }
 
         void graphics_PreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs e)
@@ -657,7 +667,7 @@ namespace ScribbleHunter.Android
                     damageExplosionManager.Update(gameTime);
 
                     settingsManager.IsActive = true;
-                    settingsManager.Update(gameTime);
+                    settingsManager.Update(gameTime, isPrivacyRequiredSupplier(), showPrivacyConsentCallback);
 
                     if (settingsManager.CancelClicked || backButtonPressed)
                     {

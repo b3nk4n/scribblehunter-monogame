@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Input.Touch;
 using System.IO.IsolatedStorage;
 using System.IO;
 using ScribbleHunter.Inputs;
+using static ScribbleHunter.Android.ScribbleHunter;
 
 namespace ScribbleHunter
 {
@@ -28,21 +29,28 @@ namespace ScribbleHunter
 
         private const string MUSIC_TITLE = "Music: ";
         private SoundValues musicValue = SoundValues.Low;
-        private readonly int musicPositionY = 370;
-        private readonly Rectangle musicDestination = new Rectangle(90, 355,
+        private readonly int musicPositionY = 300;
+        private readonly Rectangle musicDestination = new Rectangle(90, 295,
                                                                     300, 50);
 
         private const string SFX_TITLE = "SFX: ";
         private SoundValues sfxValue = SoundValues.High;
-        private readonly int sfxPositionY = 460;
-        private readonly Rectangle sfxDestination = new Rectangle(90, 445,
+        private readonly int sfxPositionY = 390;
+        private readonly Rectangle sfxDestination = new Rectangle(90, 375,
                                                                   300, 50);
 
         private const string VIBRATION_TITLE = "Vibration: ";
         private ToggleValues vibrationValue = ToggleValues.On;
-        private readonly int vibrationPositionY = 550;
-        private readonly Rectangle vibrationDestination = new Rectangle(90, 535,
+        private readonly int vibrationPositionY = 480;
+        private readonly Rectangle vibrationDestination = new Rectangle(90, 465,
                                                                         300, 50);
+
+        private const string PRIVACY_TITLE = "Privacy: ";
+        private const string PRIVACY_VALUE = "Update";
+        private readonly int privacyPositionY = 570;
+        private bool privacyEnabled = false;
+        private readonly Rectangle privacyDestination = new Rectangle(90, 555,
+                                                                      300, 50);
 
         private readonly Rectangle cancelSource = new Rectangle(0, 800,
                                                                 240, 80);
@@ -62,6 +70,7 @@ namespace ScribbleHunter
         private const string MusicAction = "Music";
         private const string SfxAction = "SFX";
         private const string VibrationAction = "Vibration";
+        private const string PrivacyAction = "Privacy";
         private const string CancelAction = "Cancel";
 
         private const string ON = "ON";
@@ -102,6 +111,9 @@ namespace ScribbleHunter
             GameInput.AddTouchGestureInput(VibrationAction,
                                            GestureType.Tap,
                                            vibrationDestination);
+            GameInput.AddTouchGestureInput(PrivacyAction,
+                                           GestureType.Tap,
+                                           privacyDestination);
             GameInput.AddTouchGestureInput(CancelAction,
                                            GestureType.Tap,
                                            cancelDestination);
@@ -123,7 +135,7 @@ namespace ScribbleHunter
             return settingsManager;
         }
 
-        public void Update(GameTime gameTime)
+        public void Update(GameTime gameTime, bool privacyOptionRequired, ShowPrivacyConsent showPrivacyConsent)
         {
             if (isActive)
             {
@@ -131,7 +143,8 @@ namespace ScribbleHunter
                     this.opacity += OpacityChangeRate;
             }
 
-            handleTouchInputs();
+            privacyEnabled = privacyOptionRequired;
+            handleTouchInputs(privacyEnabled, showPrivacyConsent);
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -145,13 +158,18 @@ namespace ScribbleHunter
             drawSfx(spriteBatch);
             drawVibration(spriteBatch);
 
+            if (privacyEnabled)
+            {
+                drawPrivacy(spriteBatch);
+            }
+
             spriteBatch.Draw(texture,
                              cancelDestination,
                              cancelSource,
                              Color.White * opacity);
         }
 
-        private void handleTouchInputs()
+        private void handleTouchInputs(bool privacyEnabled, ShowPrivacyConsent showPrivacyConsent)
         {
             if (GameInput.IsPressed(VibrationAction))
             {
@@ -166,6 +184,11 @@ namespace ScribbleHunter
             else if (GameInput.IsPressed(SfxAction))
             {
                 toggleSfx();
+                SoundManager.PlayPaperSound();
+            }
+            else if (privacyEnabled && GameInput.IsPressed(PrivacyAction))
+            {
+                showPrivacyConsent();
                 SoundManager.PlayPaperSound();
             }
             else if (GameInput.IsPressed(CancelAction))
@@ -352,6 +375,21 @@ namespace ScribbleHunter
                                    text,
                                    new Vector2((ValuePositionX - font.MeasureString(text).X),
                                                vibrationPositionY),
+                                   Color.Black * opacity);
+        }
+
+        private void drawPrivacy(SpriteBatch spriteBatch)
+        {
+            spriteBatch.DrawString(font,
+                                   PRIVACY_TITLE,
+                                   new Vector2(TextPositonX,
+                                               privacyPositionY),
+                                   Color.Black * opacity);
+
+            spriteBatch.DrawString(font,
+                                   PRIVACY_VALUE,
+                                   new Vector2((ValuePositionX - font.MeasureString(PRIVACY_VALUE).X),
+                                               privacyPositionY),
                                    Color.Black * opacity);
         }
 
