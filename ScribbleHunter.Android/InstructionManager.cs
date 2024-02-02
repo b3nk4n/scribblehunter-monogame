@@ -80,8 +80,6 @@ namespace ScribbleHunter
 
         private const string INSTRUCTION_FILE = "instructions.txt";
 
-        SettingsManager settings = SettingsManager.GetInstance();
-
         private bool powerUpsDropped;
 
         private bool isInvalidated = false;
