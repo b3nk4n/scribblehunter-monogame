@@ -3,7 +3,7 @@
 A cross-platform port of the [Windows Phone / Windows 8 scribbled space action game](https://github.com/b3nk4n/scribblehunter-game) using MonoGame.
 
 <p align="center">
-    <img alt="App Logo" src="assets/play_store_512.png">
+    <img alt="App Logo" src="assets/android/play_store_512.png">
 </p>
 
 ## Getting Started
